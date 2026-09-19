@@ -1,0 +1,19 @@
+-------------------------------------
+--- Training Kumo No Su (蜘蛛の巣) ---
+Epoch    0 | MSE Loss: 1.195920
+Epoch  500 | MSE Loss: 0.026599
+Epoch 1000 | MSE Loss: 0.011378
+Epoch 1500 | MSE Loss: 0.004588
+Epoch 2000 | MSE Loss: 0.001278
+Epoch 2500 | MSE Loss: 0.000372
+Epoch 2999 | MSE Loss: 0.000220
+
+--------------------------------------
+--------- Model Verification ---------
+Input: [0.5 1. ]
+  Target Output:    1.4794
+  Kumo Prediction:  1.4874
+
+Input: [-1.   0.5]
+  Target Output:    -0.5915
+  Kumo Prediction:  -0.5855
