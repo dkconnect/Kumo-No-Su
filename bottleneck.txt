@@ -1,0 +1,108 @@
+PS C:\Users\dkroy\Downloads\Kumo-No-Su> python mnist_main.py    
+Loading MNIST Digits Dataset
+Training set: 4000 images
+Testing set:  1000 images
+
+--- Initializing KumoNoSu (Degree 2 Polynomial Edges) ---
+
+--- Training KumoNoSu on Handwritten Digits ---
+Epoch  1/15 | Loss: 2.3065 | Accuracy: 10.78%
+Epoch  2/15 | Loss: 2.3024 | Accuracy: 10.62%
+Epoch  3/15 | Loss: 2.2982 | Accuracy: 9.65%
+Epoch  4/15 | Loss: 2.2949 | Accuracy: 10.20%
+Epoch  5/15 | Loss: 2.2918 | Accuracy: 16.78%
+Epoch  6/15 | Loss: 2.2886 | Accuracy: 20.08%
+Epoch  7/15 | Loss: 2.2860 | Accuracy: 20.25%
+Epoch  8/15 | Loss: 2.2828 | Accuracy: 12.75%
+Epoch  9/15 | Loss: 2.2794 | Accuracy: 11.47%
+Epoch 10/15 | Loss: 2.2765 | Accuracy: 11.40%
+Epoch 11/15 | Loss: 2.2729 | Accuracy: 11.62%
+Epoch 12/15 | Loss: 2.2692 | Accuracy: 11.15%
+Epoch 13/15 | Loss: 2.2655 | Accuracy: 11.22%
+Epoch 14/15 | Loss: 2.2615 | Accuracy: 11.30%
+Epoch 15/15 | Loss: 2.2577 | Accuracy: 14.07%
+
+=============================================
+ FINAL TEST SET ACCURACY: 14.60%
+=============================================
+PS C:\Users\dkroy\Downloads\Kumo-No-Su> python mnist_main.py
+Loading MNIST Digits Dataset
+Training set: 4000 images
+Testing set:  1000 images
+
+--- Initializing KumoNoSu (Degree 2 Polynomial Edges) ---
+
+--- Training KumoNoSu on Handwritten Digits ---
+Epoch  1/15 | Loss: 2.2994 | Accuracy: 11.07%
+Epoch  2/15 | Loss: 2.2968 | Accuracy: 11.07%
+Epoch  3/15 | Loss: 2.2942 | Accuracy: 11.07%
+Epoch  4/15 | Loss: 2.2917 | Accuracy: 11.07%
+Epoch  5/15 | Loss: 2.2892 | Accuracy: 11.07%
+Epoch  6/15 | Loss: 2.2868 | Accuracy: 11.07%
+Epoch  7/15 | Loss: 2.2842 | Accuracy: 11.07%
+Epoch  8/15 | Loss: 2.2816 | Accuracy: 12.15%
+Epoch  9/15 | Loss: 2.2787 | Accuracy: 14.88%
+Epoch 10/15 | Loss: 2.2756 | Accuracy: 17.20%
+Epoch 11/15 | Loss: 2.2725 | Accuracy: 19.28%
+Epoch 12/15 | Loss: 2.2692 | Accuracy: 19.50%
+Epoch 13/15 | Loss: 2.2656 | Accuracy: 18.85%
+Epoch 14/15 | Loss: 2.2618 | Accuracy: 18.95%
+Epoch 15/15 | Loss: 2.2575 | Accuracy: 19.57%
+
+=============================================
+ FINAL TEST SET ACCURACY: 17.70%
+=============================================
+PS C:\Users\dkroy\Downloads\Kumo-No-Su> python mnist_main.py
+Loading MNIST Digits Dataset
+Training set: 4000 images
+Testing set:  1000 images
+
+--- Initializing KumoNoSu (Degree 2 Polynomial Edges) ---
+
+--- Training KumoNoSu on Handwritten Digits ---
+Epoch  1/15 | Loss: 2.3254 | Accuracy: 8.75%
+Epoch  2/15 | Loss: 2.3183 | Accuracy: 10.53%
+Epoch  3/15 | Loss: 2.3117 | Accuracy: 12.83%
+Epoch  4/15 | Loss: 2.3061 | Accuracy: 11.68%
+Epoch  5/15 | Loss: 2.3006 | Accuracy: 11.07%
+Epoch  6/15 | Loss: 2.2951 | Accuracy: 11.07%
+Epoch  7/15 | Loss: 2.2908 | Accuracy: 11.07%
+Epoch  8/15 | Loss: 2.2862 | Accuracy: 11.07%
+Epoch  9/15 | Loss: 2.2819 | Accuracy: 11.10%
+Epoch 10/15 | Loss: 2.2778 | Accuracy: 12.83%
+Epoch 11/15 | Loss: 2.2731 | Accuracy: 17.00%
+Epoch 12/15 | Loss: 2.2684 | Accuracy: 22.38%
+Epoch 13/15 | Loss: 2.2631 | Accuracy: 33.23%
+Epoch 14/15 | Loss: 2.2577 | Accuracy: 32.65%
+Epoch 15/15 | Loss: 2.2521 | Accuracy: 29.15%
+
+=============================================
+ FINAL TEST SET ACCURACY: 25.80%
+=============================================
+PS C:\Users\dkroy\Downloads\Kumo-No-Su> python mnist_main.py
+Loading MNIST Digits Dataset
+Training set: 4000 images
+Testing set:  1000 images
+
+--- Initializing KumoNoSu (Degree 2 Polynomial Edges) ---
+
+--- Training KumoNoSu on Handwritten Digits ---
+Epoch  1/15 | Loss: 2.3114 | Accuracy: 9.83%
+Epoch  2/15 | Loss: 2.3076 | Accuracy: 12.00%
+Epoch  3/15 | Loss: 2.3039 | Accuracy: 15.40%
+Epoch  4/15 | Loss: 2.3006 | Accuracy: 16.25%
+Epoch  5/15 | Loss: 2.2972 | Accuracy: 12.00%
+Epoch  6/15 | Loss: 2.2940 | Accuracy: 12.15%
+Epoch  7/15 | Loss: 2.2915 | Accuracy: 10.90%
+Epoch  8/15 | Loss: 2.2887 | Accuracy: 11.92%
+Epoch  9/15 | Loss: 2.2857 | Accuracy: 13.55%
+Epoch 10/15 | Loss: 2.2827 | Accuracy: 16.32%
+Epoch 11/15 | Loss: 2.2798 | Accuracy: 18.57%
+Epoch 12/15 | Loss: 2.2763 | Accuracy: 20.12%
+Epoch 13/15 | Loss: 2.2730 | Accuracy: 26.32%
+Epoch 14/15 | Loss: 2.2698 | Accuracy: 25.72%
+Epoch 15/15 | Loss: 2.2665 | Accuracy: 26.07%
+
+=============================================
+ FINAL TEST SET ACCURACY: 26.60%
+=============================================
