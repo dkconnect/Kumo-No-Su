@@ -10,5 +10,5 @@ layer = KumoLayer(
 x = np.array([2.0, 3.0])
 y = layer.forward(x)
 
-print("Bias:", layer.bias)
-print("Returned from Kumo:", y)
+print("Input:", x)
+print("Output:", y)
