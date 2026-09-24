@@ -6,6 +6,9 @@ class KumoLayer:
         self.n_outputs = n_outputs
         self.degree = degree
 
+        # Degree 2: c0 + c1*x + c2*x^2
+        # so we need 3 coefficients
+
         self.n_coeffs = degree + 1
 
         self.C = np.random.randn(
@@ -14,19 +17,72 @@ class KumoLayer:
             self.n_coeffs
         ) * 0.1
 
+        self.x = None
+        self.powers = None
+
     def forward(self, x):
-        self.powers = x[:, None, None] ** np.arange(self.n_coeffs)
+        self.x = x
+        self.powers = (
+            x[:, None, None]
+            ** np.arange(self.n_coeffs)
+        )
+
         terms = self.C * self.powers
 
-        edge_outputs = np.sum(terms, axis=2)
-        output = np.sum(edge_outputs, axis=0)
+        # Sum polynomial terms.
+        edge_outputs = np.sum(
+            terms,
+            axis=2
+        )
+
+        # Sum all incoming edges for each output.
+        output = np.sum(
+            edge_outputs,
+            axis=0
+        )
 
         return output
-        
+
     def backward(self, error):
-        coefficient_gradients = self.powers * error
+        # COEFFICIENT GRADIENTS
+        coefficient_gradients = (
+            self.powers * error
+        )
 
-        return coefficient_gradients
+        # INPUT GRADIENTS
+        # We also need to know how the loss changes wrt each input.
 
-    def update(self, coefficient_gradients, bias_gradients, learning_rate):
-        self.C -= learning_rate * coefficient_gradients
+        degrees = np.arange(self.n_coeffs)
+        power_derivatives = np.zeros_like(
+            self.powers
+        )
+
+        # Derivatives:
+
+        if self.n_coeffs > 1:
+            power_derivatives[:, :, 1:] = (
+                degrees[1:]
+                * self.x[:, None, None]
+                ** (degrees[1:] - 1)
+            )
+
+        edge_derivatives = np.sum(
+            self.C * power_derivatives,
+            axis=2
+        )
+
+        # Each input may connect to multiple  outputs, so we sum the gradient coming backward through all of them.
+
+        input_gradients = np.sum(
+            edge_derivatives * error,
+            axis=1
+        )
+
+        return coefficient_gradients, input_gradients
+
+    def update(self, coefficient_gradients, learning_rate):
+
+        self.C -= (
+            learning_rate
+            * coefficient_gradients
+        )
