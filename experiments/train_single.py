@@ -10,18 +10,28 @@ layer = KumoLayer(
 x = np.array([2.0, 3.0])
 target = np.array([5.0])
 
-prediction = layer.forward(x)
-error = prediction - target
-loss = 0.5 * np.sum(error ** 2)
+learning_rate = 0.001
 
-coefficient_gradients, bias_gradients = layer.backward(error)
+for epoch in range(100):
+    # Forward
+    prediction = layer.forward(x)
 
-print("Input:", x)
-print("Prediction:", prediction)
-print("Target:", target)
-print("Error:", error)
-print("Loss:", loss)
-print("Coefficient gradients:")
-print(coefficient_gradients)
-print("Bias gradients:")
-print(bias_gradients)
+    # Error and loss
+    error = prediction - target
+    loss = 0.5 * np.sum(error ** 2)
+
+    # Backward
+    coefficient_gradients, bias_gradients = layer.backward(error)
+
+    layer.update(
+        coefficient_gradients,
+        bias_gradients,
+        learning_rate
+    )
+
+    if epoch % 10 == 0:
+        print(
+            f"Epoch {epoch:3d} | "
+            f"Prediction: {prediction[0]:.6f} | "
+            f"Loss: {loss:.6f}"
+        )
