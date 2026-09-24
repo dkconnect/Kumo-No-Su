@@ -13,3 +13,9 @@ class KumoLayer:
             n_outputs,
             self.n_coeffs
         ) * 0.1
+
+    def forward(self, x):
+        powers = x[:, None, None] ** np.arange(self.n_coeffs)
+
+        print("x shape:", x.shape)
+        print("powers shape:", powers.shape)
