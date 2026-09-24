@@ -1,7 +1,5 @@
 import numpy as np
-
 from kumo.layer import KumoLayer
-
 
 layer = KumoLayer(
     n_inputs=2,
@@ -10,5 +8,6 @@ layer = KumoLayer(
 )
 
 x = np.array([2.0, 3.0])
+y = layer.forward(x)
 
-layer.forward(x)
+print("Returned from Kumo:", y)

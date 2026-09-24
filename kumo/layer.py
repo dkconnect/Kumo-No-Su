@@ -17,12 +17,13 @@ class KumoLayer:
 
     def forward(self, x):
         powers = x[:, None, None] ** np.arange(self.n_coeffs)
-
         terms = self.C * powers
-
         edge_outputs = np.sum(terms, axis=2)
+        output = np.sum(edge_outputs, axis=0)
 
-        print("terms shape:", terms.shape)
-        print("edge outputs shape:", edge_outputs.shape)
         print("edge outputs:")
         print(edge_outputs)
+        print("final output:")
+        print(output)
+
+        return output
