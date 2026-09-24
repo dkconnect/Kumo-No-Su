@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class KumoLayer:
     def __init__(self, n_inputs, n_outputs, degree):
         self.n_inputs = n_inputs
@@ -13,3 +14,9 @@ class KumoLayer:
             n_outputs,
             self.n_coeffs
         ) * 0.1
+
+    def forward(self, x):
+        powers = x[:, None, None] ** np.arange(self.n_coeffs)
+
+        print("x shape:", x.shape)
+        print("powers shape:", powers.shape)
