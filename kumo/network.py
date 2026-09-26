@@ -1,3 +1,4 @@
+import numpy as np
 from kumo.layer import KumoLayer
 
 class KumoNetwork:
@@ -21,9 +22,8 @@ class KumoNetwork:
 
     def backward(self, error):
         gradients = []
-        current_gradient = error
 
-        # Move backward 
+        current_gradient = error
         for layer in reversed(self.layers):
 
             coefficient_gradients, input_gradients = (
@@ -36,13 +36,10 @@ class KumoNetwork:
 
             current_gradient = input_gradients
 
-        # Gradients collected backwards
         gradients.reverse()
         return gradients
 
     def update(self, gradients, learning_rate):
-        # Pairing layers and gradients
-
         for layer, coefficient_gradients in zip(
             self.layers,
             gradients
@@ -51,3 +48,57 @@ class KumoNetwork:
                 coefficient_gradients,
                 learning_rate
             )
+
+    def save(self, filename):
+        data = {}
+
+        data["n_layers"] = np.array(
+            [len(self.layers)]
+        )
+
+        # arch. + coefficients
+        # for every layer
+        for i, layer in enumerate(self.layers):
+
+            data[f"layer_{i}_config"] = np.array([
+                layer.n_inputs,
+                layer.n_outputs,
+                layer.degree
+            ])
+
+            data[f"layer_{i}_C"] = layer.C
+
+        np.savez(
+            filename,
+            **data
+        )
+
+    @classmethod
+    def load(cls, filename):
+        data = np.load(filename)
+
+        network = cls()
+        n_layers = int(
+            data["n_layers"][0]
+        )
+
+        for i in range(n_layers):
+            config = data[
+                f"layer_{i}_config"
+            ]
+
+            n_inputs = int(config[0])
+            n_outputs = int(config[1])
+            degree = int(config[2])
+
+            network.add_layer(
+                n_inputs=n_inputs,
+                n_outputs=n_outputs,
+                degree=degree
+            )
+
+            network.layers[i].C = (
+                data[f"layer_{i}_C"].copy()
+            )
+
+        return network

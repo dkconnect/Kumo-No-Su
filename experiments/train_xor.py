@@ -72,3 +72,11 @@ for x, target in zip(X, Y):
         f"{prediction[0]:.4f} "
         f"(target {target[0]:.0f})"
     )
+
+model_path = "models/xor_kumo.npz"
+network.save(model_path)
+
+print(
+    f"\nSaved trained Kumo to: "
+    f"{model_path}"
+)
