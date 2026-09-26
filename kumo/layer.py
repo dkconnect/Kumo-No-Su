@@ -4,13 +4,11 @@ class KumoLayer:
     def __init__(self, n_inputs, n_outputs, degree):
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
+
         self.degree = degree
-
-        # Degree 2: c0 + c1*x + c2*x^2
-        # so we need 3 coefficients
-
         self.n_coeffs = degree + 1
 
+        # I,O,C
         self.C = np.random.randn(
             n_inputs,
             n_outputs,
@@ -22,20 +20,22 @@ class KumoLayer:
 
     def forward(self, x):
         self.x = x
+
+        # I,1,C
         self.powers = (
             x[:, None, None]
             ** np.arange(self.n_coeffs)
         )
 
+        # I,O,C
         terms = self.C * self.powers
 
-        # Sum polynomial terms.
+        # polynomial coeff.
         edge_outputs = np.sum(
             terms,
             axis=2
         )
 
-        # Sum all incoming edges for each output.
         output = np.sum(
             edge_outputs,
             axis=0
@@ -45,19 +45,26 @@ class KumoLayer:
 
     def backward(self, error):
         # COEFFICIENT GRADIENTS
+
+        # so it broadcasts across inputs nd polynomial coefficients.
+
+        error_reshaped = error[None, :, None]
+
+        # (I,1,C) x (1,O,1) = (I,O,C)
+
         coefficient_gradients = (
-            self.powers * error
+            self.powers * error_reshaped
         )
 
         # INPUT GRADIENTS
-        # We also need to know how the loss changes wrt each input.
 
-        degrees = np.arange(self.n_coeffs)
+        degrees = np.arange(
+            self.n_coeffs
+        )
+
         power_derivatives = np.zeros_like(
             self.powers
         )
-
-        # Derivatives:
 
         if self.n_coeffs > 1:
             power_derivatives[:, :, 1:] = (
@@ -71,17 +78,24 @@ class KumoLayer:
             axis=2
         )
 
-        # Each input may connect to multiple  outputs, so we sum the gradient coming backward through all of them.
+        # error shape
+        # sum across outputs
 
         input_gradients = np.sum(
             edge_derivatives * error,
             axis=1
         )
 
-        return coefficient_gradients, input_gradients
+        return (
+            coefficient_gradients,
+            input_gradients
+        )
 
-    def update(self, coefficient_gradients, learning_rate):
-
+    def update(
+        self,
+        coefficient_gradients,
+        learning_rate
+    ):
         self.C -= (
             learning_rate
             * coefficient_gradients

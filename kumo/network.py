@@ -1,6 +1,5 @@
 from kumo.layer import KumoLayer
 
-
 class KumoNetwork:
     def __init__(self):
         self.layers = []
@@ -22,22 +21,33 @@ class KumoNetwork:
 
     def backward(self, error):
         gradients = []
-
-        # starting gradient coming
-        # from the loss.
         current_gradient = error
 
+        # Move backward 
         for layer in reversed(self.layers):
 
             coefficient_gradients, input_gradients = (
                 layer.backward(current_gradient)
             )
 
-            gradients.append(coefficient_gradients)
+            gradients.append(
+                coefficient_gradients
+            )
 
             current_gradient = input_gradients
 
-        # Layer 2 gradient
-        # Layer 1 gradient
+        # Gradients collected backwards
         gradients.reverse()
         return gradients
+
+    def update(self, gradients, learning_rate):
+        # Pairing layers and gradients
+
+        for layer, coefficient_gradients in zip(
+            self.layers,
+            gradients
+        ):
+            layer.update(
+                coefficient_gradients,
+                learning_rate
+            )
