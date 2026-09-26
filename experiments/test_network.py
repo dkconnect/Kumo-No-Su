@@ -22,6 +22,12 @@ x = np.array([
 
 prediction = network.forward(x)
 
+target = np.array([5.0])
+
+error = prediction - target
+
+gradients = network.backward(error)
+
 print("Input:")
 print(x)
 
@@ -36,3 +42,15 @@ print(network.layers[0].C.shape)
 
 print("\nLayer 2 coefficients:")
 print(network.layers[1].C.shape)
+
+print("\nError:")
+print(error)
+
+print("\nNumber of gradient arrays:")
+print(len(gradients))
+
+print("\nLayer 1 gradient shape:")
+print(gradients[0].shape)
+
+print("\nLayer 2 gradient shape:")
+print(gradients[1].shape)
