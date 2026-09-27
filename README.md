@@ -1,4 +1,9 @@
-# Kumo-No-Su
+<div align="center">
+  <img src="kumo_logo.png" width="180" alt="Kumo No Su Logo"/>
+
+  # Kumo No Su
+  # 蜘蛛の巣
+</div>
 
 In a standard neural network:
 
