@@ -8,11 +8,18 @@ class KumoLayer:
 
         self.n_coeffs = degree + 1
         # I,O,C
+        # Scale initialization according to the number of incoming edges.
+        scale = 1.0 / np.sqrt(
+            n_inputs
+        )
+
         self.C = np.random.randn(
             n_inputs,
             n_outputs,
             self.n_coeffs
-        ) * 0.1
+        ) * scale
+
+        self.C[:, :, 0] = 0.0
 
         self.x = None
         self.powers = None
