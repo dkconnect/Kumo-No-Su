@@ -3,6 +3,7 @@ import numpy as np
 from data.load_mnist import load_mnist
 from kumo.network import KumoNetwork
 
+np.random.seed(42)
 TRAIN_SIZE = 2000
 TEST_SIZE = 500
 BATCH_SIZE = 32

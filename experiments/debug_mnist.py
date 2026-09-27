@@ -2,6 +2,7 @@ import numpy as np
 from data.load_mnist import load_mnist
 from kumo.network import KumoNetwork
 
+np.random.seed(42)
 TRAIN_SIZE = 2000
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
@@ -53,6 +54,14 @@ def stats(name, array):
         f"mean={np.nanmean(array):>12.5e}  "
         f"finite={finite}"
     )
+
+indices = np.random.permutation(
+    TRAIN_SIZE
+)
+
+X_train = X_train[indices]
+Y_train = Y_train[indices]
+y_train = y_train[indices]
 
 print("\nDebugging first epoch...\n")
 
