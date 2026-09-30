@@ -120,22 +120,11 @@ for epoch in range(EPOCHS):
     ):
 
         end = start + BATCH_SIZE
-        X_batch = X_train[
-            start:end
-        ]
+        X_batch = X_train[start:end]
 
-        Y_batch = Y_train[
-            start:end
-        ]
-
-        outputs = network.forward(
-            X_batch
-        )
-
-        error = (
-            outputs
-            - Y_batch
-        )
+        Y_batch = Y_train[start:end]
+        outputs = network.forward(X_batch)
+        error = (outputs - Y_batch)
 
         batch_loss = np.mean(
             0.5
@@ -151,15 +140,9 @@ for epoch in range(EPOCHS):
             error
         )
 
-        network.update(
-            gradients,
-            LEARNING_RATE
-        )
+        network.update(gradients, LEARNING_RATE)
 
-    average_loss = (
-        total_loss
-        / n_batches
-    )
+    average_loss = (total_loss / n_batches)
 
     test_accuracy = (
         calculate_accuracy(
@@ -177,14 +160,9 @@ for epoch in range(EPOCHS):
     )
 
 print("\nSample predictions:")
-sample_outputs = network.forward(
-    X_test[:10]
-)
+sample_outputs = network.forward(X_test[:10])
 
-sample_predictions = np.argmax(
-    sample_outputs,
-    axis=1
-)
+sample_predictions = np.argmax(sample_outputs, axis=1)
 
 for i in range(10):
     print(
@@ -193,18 +171,9 @@ for i in range(10):
         f"{sample_predictions[i]}"
     )
 
-os.makedirs(
-    "models",
-    exist_ok=True
-)
-
-model_path = (
-    "models/mnist_small_kumo.npz"
-)
-
-network.save(
-    model_path
-)
+os.makedirs("models", exist_ok=True)
+model_path = ("models/mnist_small_kumo.npz")
+network.save(model_path)
 
 print(f"\nSaved model to: f"{model_path}"
 )
