@@ -89,45 +89,14 @@ for batch_number, start in enumerate(
         f"\n--- Batch {batch_number} ---"
     )
 
-    stats(
-        "input",
-        X_batch
-    )
-
-    stats(
-        "hidden",
-        hidden
-    )
-
-    stats(
-        "output",
-        output
-    )
-
-    stats(
-        "error",
-        error
-    )
-
-    stats(
-        "layer1 grad",
-        gradients[0]
-    )
-
-    stats(
-        "layer2 grad",
-        gradients[1]
-    )
-
-    stats(
-        "layer1 C",
-        network.layers[0].C
-    )
-
-    stats(
-        "layer2 C",
-        network.layers[1].C
-    )
+    stats("input", X_batch)
+    stats("hidden", hidden)
+    stats("output", output)
+    stats("error", error)
+    stats("layer1 grad", gradients[0])
+    stats("layer2 grad", gradients[1])
+    stats("layer1 C", network.layers[0].C)
+    stats("layer2 C", network.layers[1].C)
 
     arrays = [hidden, output, error, gradients[0], gradients[1]]
 
@@ -135,9 +104,7 @@ for batch_number, start in enumerate(
         np.all(np.isfinite(array))
         for array in arrays
     ):
-        print(
-            "\n!!! NON-FINITE VALUE FOUND !!!"
-        )
+        print("\n!!! NON-FINITE VALUE FOUND")
 
         print(
             f"Explosion occurred in "

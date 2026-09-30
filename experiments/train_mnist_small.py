@@ -72,15 +72,8 @@ network.add_layer(
 print("\nKumo architecture:")
 print("784 -> 16 -> 10")
 
-print(
-    "Layer 1 coefficients:",
-    network.layers[0].C.shape
-)
-
-print(
-    "Layer 2 coefficients:",
-    network.layers[1].C.shape
-)
+print("Layer 1 coefficients:",network.layers[0].C.shape)
+print("Layer 2 coefficients:",network.layers[1].C.shape)
 
 def calculate_accuracy(
     network,
@@ -96,7 +89,6 @@ def calculate_accuracy(
     accuracy = np.mean(
         predictions == labels
     )
-
     return accuracy
 
 initial_accuracy = calculate_accuracy(
@@ -105,10 +97,7 @@ initial_accuracy = calculate_accuracy(
     y_test
 )
 
-print(
-    "\nInitial test accuracy: "
-    f"{initial_accuracy * 100:.2f}%"
-)
+print("\nInitial test accuracy: "f"{initial_accuracy * 100:.2f}%")
 
 n_samples = len(X_train)
 for epoch in range(EPOCHS):
@@ -131,7 +120,6 @@ for epoch in range(EPOCHS):
     ):
 
         end = start + BATCH_SIZE
-
         X_batch = X_train[
             start:end
         ]
@@ -159,7 +147,6 @@ for epoch in range(EPOCHS):
 
         total_loss += batch_loss
         n_batches += 1
-
         gradients = network.backward(
             error
         )
@@ -190,7 +177,6 @@ for epoch in range(EPOCHS):
     )
 
 print("\nSample predictions:")
-
 sample_outputs = network.forward(
     X_test[:10]
 )
@@ -220,7 +206,5 @@ network.save(
     model_path
 )
 
-print(
-    f"\nSaved model to: "
-    f"{model_path}"
+print(f"\nSaved model to: f"{model_path}"
 )

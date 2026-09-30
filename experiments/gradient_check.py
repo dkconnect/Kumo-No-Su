@@ -149,50 +149,26 @@ for layer_index, layer in enumerate(
 
                     failed += 1
                     print(
-                        "  FAIL "
+                        "FAIL"
                         f"C[{input_index}, "
                         f"{output_index}, "
                         f"{coefficient_index}]"
                     )
 
-                    print(
-                        "       analytical = "
-                        f"{analytical_gradient:.10f}"
-                    )
+                    print("analytical = "f"{analytical_gradient:.10f}")
+                    print("numerical  = "f"{numerical_gradient:.10f}")
+                    print("difference = "f"{difference:.10e}")
 
-                    print(
-                        "       numerical  = "
-                        f"{numerical_gradient:.10f}"
-                    )
-
-                    print(
-                        "       difference = "
-                        f"{difference:.10e}"
-                    )
-
-    print(
-        f"Layer {layer_index + 1} "
-        f"finished."
-    )
+    print(f"Layer {layer_index + 1} "f"finished.")
     print()
 
 print()
 print("Gradient Check Summary")
 print()
 
-print(
-    f"Coefficients checked: "
-    f"{total_checked}"
-)
-
-print(
-    f"Failed: "
-    f"{failed}"
-)
-
-print(
-    f"Largest difference: "
-    f"{largest_difference:.10e}"
+print(f"Coefficients checked: "f"{total_checked}")
+print(f"Failed: "f"{failed}")
+print(f"Largest difference: "f"{largest_difference:.10e}"
 )
 
 if largest_location is not None:
@@ -214,15 +190,7 @@ if largest_location is not None:
 print()
 
 if failed == 0:
-    print(
-        "PASS: All Kumo gradients agree "
-        "with numerical derivatives."
-    )
+    print("PASS: All Kumo gradients agree with numerical derivatives.")
 
 else:
-    print(
-        "FAIL: Some Kumo gradients do not "
-        "match numerical derivatives."
-    )
-
-    
+    print("FAIL: Some Kumo gradients do not match numerical derivatives.")
