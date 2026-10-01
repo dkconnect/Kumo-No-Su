@@ -81,8 +81,33 @@ class KumoCanvas:
         self.draw = ImageDraw.Draw(self.image)
 
     def get_kumo_input(self):
-        image = self.image.resize((MNIST_SIZE, MNIST_SIZE), Image.Resampling.LANCZOS)
-        pixels = np.asarray(image, dtype=float)
+        image = self.image.copy()
+        bbox = image.getbbox()
+        if bbox is None:
+            return np.zeros(
+                (MNIST_SIZE, MNIST_SIZE),
+                dtype=float
+            )
+
+        digit = image.crop(bbox)
+        width, height = digit.size
+        scale = min(20 / width, 20 / height)
+
+        new_width = max(1, int(width * scale))
+        new_height = max(1,int(height * scale))
+
+        digit = digit.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        centered = Image.new(
+            "L",
+            (MNIST_SIZE, MNIST_SIZE),
+            0
+        )
+
+        x = (MNIST_SIZE - new_width) // 2
+        y = (MNIST_SIZE - new_height) // 2
+
+        centered.paste(digit, (x, y))
+        pixels = np.asarray(centered, dtype=float)
         pixels = pixels / 255.0
         return pixels
 
