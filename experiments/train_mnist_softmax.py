@@ -11,12 +11,12 @@ from kumo.losses import (
 
 np.random.seed(42)
 
-TRAIN_SIZE = 2000
-VALIDATION_SIZE = 500
+TRAIN_SIZE = 10000
+VALIDATION_SIZE = 1000
 BATCH_SIZE = 32
 EPOCHS = 10
 LEARNING_RATE = 0.001
-MODEL_PATH = "models/mnist_softmax_kumo.npz"
+MODEL_PATH = "models/mnist_10k_kumo.npz"
 
 X, y = load_mnist()
 
