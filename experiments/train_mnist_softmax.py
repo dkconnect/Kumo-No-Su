@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from data.load_mnist import load_mnist
+from data.load_mnist import load_mnist_split
 from kumo.network import KumoNetwork
 from kumo.losses import (
     softmax,
@@ -11,20 +11,20 @@ from kumo.losses import (
 
 np.random.seed(42)
 
-TRAIN_SIZE = 10000
-VALIDATION_SIZE = 1000
+TRAIN_SIZE = 50000
+VALIDATION_SIZE = 10000
 BATCH_SIZE = 32
 EPOCHS = 10
 LEARNING_RATE = 0.001
-MODEL_PATH = "models/mnist_10k_kumo.npz"
+MODEL_PATH = "models/mnist_full_kumo.npz"
 
-X, y = load_mnist()
+X_full_train, y_full_train, X_test, y_test = (load_mnist_split())
 
-X_train = X[:TRAIN_SIZE]
-y_train = y[:TRAIN_SIZE]
+X_train = X_full_train[:TRAIN_SIZE]
+y_train = y_full_train[:TRAIN_SIZE]
 
-X_validation = X[TRAIN_SIZE: TRAIN_SIZE + VALIDATION_SIZE]
-y_validation = y[TRAIN_SIZE: TRAIN_SIZE + VALIDATION_SIZE]
+X_validation = X_full_train[TRAIN_SIZE: TRAIN_SIZE + VALIDATION_SIZE]
+y_validation = y_full_train[TRAIN_SIZE: TRAIN_SIZE + VALIDATION_SIZE]
 
 print("\nTraining images:")
 print(X_train.shape)
@@ -37,6 +37,12 @@ print(X_validation.shape)
 
 print("Validation labels:")
 print(y_validation.shape)
+
+print("\nTest images:")
+print(X_test.shape)
+
+print("Test labels:")
+print(y_test.shape)
 
 
 def one_hot(labels, n_classes=10):
@@ -199,26 +205,30 @@ print(
 
 best_network = KumoNetwork.load(MODEL_PATH)
 
+test_accuracy = calculate_accuracy(best_network, X_test, y_test)
+
+print(
+    "\nFinal test accuracy: "
+    f"{test_accuracy * 100:.2f}%"
+)
+
 print(
     "\nSample predictions "
     "from best checkpoint:"
 )
 
-sample_logits = best_network.forward(X_validation[:10])
+sample_logits = best_network.forward(X_test[:10])
 sample_probabilities = softmax(sample_logits)
 sample_predictions = np.argmax(sample_probabilities, axis=1)
 
+print("\nSample test predictions:")
+
 for i in range(10):
     predicted = sample_predictions[i]
-    confidence = (
-        sample_probabilities[
-            i,
-            predicted
-        ]
-    )
+    confidence = sample_probabilities[i, predicted]
 
     print(
-        f"True: {y_validation[i]} | "
+        f"True: {y_test[i]} | "
         f"Predicted: {predicted} | "
         f"Confidence: "
         f"{confidence * 100:.2f}%"
