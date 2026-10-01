@@ -1,8 +1,10 @@
-import numpy as np
 from sklearn.datasets import fetch_openml
+import numpy as np
+
 
 def load_mnist():
-    print("Loading MNIST...")
+    print("Loading MNIST")
+
     mnist = fetch_openml(
         "mnist_784",
         version=1,
@@ -10,57 +12,19 @@ def load_mnist():
         parser="auto"
     )
 
-    X = mnist.data.astype(
-        np.float64
-    )
-
-    y = mnist.target.astype(
-        np.int64
-    )
-
-    # normalizing pixels
+    X = mnist.data.astype(np.float64)
+    y = mnist.target.astype(np.int64)
     X = X / 255.0
     return X, y
 
-if __name__ == "__main__":
+
+def load_mnist_split():
 
     X, y = load_mnist()
-    print("\nDataset loaded.")
+    X_train = X[:60000]
+    y_train = y[:60000]
 
-    print(
-        "Images shape:",
-        X.shape
-    )
+    X_test = X[60000:]
+    y_test = y[60000:]
 
-    print(
-        "Labels shape:",
-        y.shape
-    )
-
-    print(
-        "\nFirst label:",
-        y[0]
-    )
-
-    print(
-        "First image shape:",
-        X[0].shape
-    )
-
-    print(
-        "Minimum pixel:",
-        X[0].min()
-    )
-
-    print(
-        "Maximum pixel:",
-        X[0].max()
-    )
-
-    print(
-        "\nFirst 20 pixels:"
-    )
-
-    print(
-        X[0][:20]
-    )
+    return (X_train, y_train, X_test, y_test)
