@@ -4,16 +4,23 @@ import matplotlib.pyplot as plt
 
 from PIL import Image, ImageDraw
 
+from kumo.network import KumoNetwork
+from kumo.losses import softmax
+
+
 CANVAS_SIZE = 280
 BRUSH_SIZE = 20
 MNIST_SIZE = 28
 
+MODEL_PATH = "models/mnist_full_kumo.npz"
+
 
 class KumoCanvas:
     def __init__(self):
+
         self.root = tk.Tk()
         self.root.title("Kumo No Su")
-
+        self.network = KumoNetwork.load(MODEL_PATH)
         self.canvas = tk.Canvas(
             self.root,
             width=CANVAS_SIZE,
@@ -21,9 +28,7 @@ class KumoCanvas:
             bg="black",
             cursor="cross"
         )
-
         self.canvas.pack(padx=20, pady=20)
-
         self.image = Image.new(
             "L",
             (CANVAS_SIZE, CANVAS_SIZE),
@@ -32,16 +37,27 @@ class KumoCanvas:
 
         self.draw = ImageDraw.Draw(self.image)
         self.canvas.bind("<B1-Motion>", self.paint)
-        
+
+        self.result_label = tk.Label(
+            self.root,
+            text="Draw a digit",
+            font=("Arial", 20)
+        )
+
+        self.result_label.pack(pady=5)
+
         button_frame = tk.Frame(self.root)
         button_frame.pack(pady=10)
 
-        clear_button = tk.Button(
+        predict_button = tk.Button(
             button_frame,
-            text="Clear",
-            command=self.clear
+            text="Predict",
+            command=self.predict
         )
 
+        predict_button.pack(side=tk.LEFT, padx=5)
+
+        clear_button = tk.Button(button_frame, text="Clear", command=self.clear)
         clear_button.pack(side=tk.LEFT, padx=5)
 
         preview_button = tk.Button(
@@ -54,6 +70,7 @@ class KumoCanvas:
 
     def paint(self, event):
         radius = BRUSH_SIZE // 2
+
         x1 = event.x - radius
         y1 = event.y - radius
         x2 = event.x + radius
@@ -72,17 +89,20 @@ class KumoCanvas:
 
     def clear(self):
         self.canvas.delete("all")
+
         self.image = Image.new(
             "L",
             (CANVAS_SIZE, CANVAS_SIZE),
             0
         )
 
-        self.draw = ImageDraw.Draw(self.image)
+        self.draw = ImageDraw.Draw( self.image)
+        self.result_label.config(text="Draw a digit")
 
     def get_kumo_input(self):
         image = self.image.copy()
         bbox = image.getbbox()
+
         if bbox is None:
             return np.zeros(
                 (MNIST_SIZE, MNIST_SIZE),
@@ -91,12 +111,16 @@ class KumoCanvas:
 
         digit = image.crop(bbox)
         width, height = digit.size
+
         scale = min(20 / width, 20 / height)
-
         new_width = max(1, int(width * scale))
-        new_height = max(1,int(height * scale))
+        new_height = max(1, int(height * scale))
 
-        digit = digit.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        digit = digit.resize(
+            (new_width, new_height),
+            Image.Resampling.LANCZOS
+        )
+
         centered = Image.new(
             "L",
             (MNIST_SIZE, MNIST_SIZE),
@@ -111,9 +135,47 @@ class KumoCanvas:
         pixels = pixels / 255.0
         return pixels
 
+    def predict(self):
+        if self.image.getbbox() is None:
+            self.result_label.config(text="Draw something first")
+
+            return
+
+        pixels = self.get_kumo_input()
+        x = pixels.flatten()
+
+        logits = self.network.forward(x)
+        probabilities = softmax(logits)
+        prediction = int(np.argmax(probabilities))
+        confidence = probabilities[prediction]
+
+        self.result_label.config(
+            text=(
+                f"Kumo: {prediction}   "
+                f"{confidence * 100:.1f}%"
+            )
+        )
+
+        print("\nKumo prediction:", prediction)
+        print("Confidence:", f"{confidence * 100:.2f}%")
+
+        print("\nProbabilities:")
+
+        for digit in range(10):
+            marker = ""
+            if digit == prediction:
+                marker = "  <---"
+
+            print(
+                f"{digit}: "
+                f"{probabilities[digit] * 100:6.2f}%"
+                f"{marker}"
+            )
+
     def show_kumo_input(self):
         pixels = self.get_kumo_input()
         print("\nKumo input shape:", pixels.shape)
+
         print("Minimum pixel:", pixels.min())
         print("Maximum pixel:", pixels.max())
         print("Flattened shape:", pixels.flatten().shape)
@@ -124,12 +186,15 @@ class KumoCanvas:
             vmin=0,
             vmax=1
         )
-        plt.title("What Kumo Will See")
+
+        plt.title("Kumo's vision")
+
         plt.axis("off")
         plt.show()
 
     def run(self):
         self.root.mainloop()
+
 
 app = KumoCanvas()
 app.run()
