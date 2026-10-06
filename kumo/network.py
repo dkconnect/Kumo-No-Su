@@ -20,6 +20,15 @@ class KumoNetwork:
 
         return x
 
+    def inspect(self, x):
+        activations = [x]
+
+        for layer in self.layers:
+            x = layer.forward(x)
+            activations.append(x.copy())
+
+        return activations
+
     def backward(self, error):
         gradients = []
 
