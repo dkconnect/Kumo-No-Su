@@ -101,23 +101,47 @@ print(
     )
 )
 
-plt.imshow(
+
+figure, axes = plt.subplots(
+    1,
+    2,
+    figsize=(9, 4)
+)
+
+axes[0].imshow(
+    x.reshape(28, 28),
+    cmap="gray"
+)
+
+axes[0].set_title(
+    f"MNIST digit {y_test[0]}"
+)
+
+axes[0].axis(
+    "off"
+)
+
+image = axes[1].imshow(
     contribution_image,
     cmap="coolwarm",
     vmin=-limit,
     vmax=limit
 )
 
-plt.colorbar(
+axes[1].set_title(
+    f"Contributions → hidden {HIDDEN_NODE}"
+)
+
+axes[1].axis(
+    "off"
+)
+
+figure.colorbar(
+    image,
+    ax=axes[1],
     label="Edge contribution"
 )
 
-plt.title(
-    f"Kumo hidden node {HIDDEN_NODE} contributions"
-)
-
-plt.axis(
-    "off"
-)
+plt.tight_layout()
 
 plt.show()
