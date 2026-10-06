@@ -31,16 +31,19 @@ coefficients = layer.C[
     :
 ]
 
-c0 = coefficients[:, 0]
-c1 = coefficients[:, 1]
-c2 = coefficients[:, 2]
+bias = layer.b[
+    HIDDEN_NODE
+]
 
-constant_terms = c0
-linear_terms = c1 * x
-quadratic_terms = c2 * x ** 2
+c1 = coefficients[:, 0]
+c2 = coefficients[:, 1]
 
-constant_total = np.sum(
-    constant_terms
+linear_terms = (
+    c1 * x
+)
+
+quadratic_terms = (
+    c2 * x ** 2
 )
 
 linear_total = np.sum(
@@ -52,23 +55,28 @@ quadratic_total = np.sum(
 )
 
 reconstructed = (
-    constant_total
+    bias
     + linear_total
     + quadratic_total
 )
 
-print("\nHidden node:", HIDDEN_NODE)
+print(
+    "\nHidden node:",
+    HIDDEN_NODE
+)
 
 print(
     "Actual activation:",
     hidden[HIDDEN_NODE]
 )
 
-print("\nPolynomial term totals:")
+print(
+    "\nPolynomial term totals:"
+)
 
 print(
-    "c0:     ",
-    constant_total
+    "bias:   ",
+    bias
 )
 
 print(

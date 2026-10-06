@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from data.load_mnist import load_mnist_split
 from kumo.network import KumoNetwork
@@ -32,14 +32,13 @@ coefficients = layer.C[
     :
 ]
 
-powers = np.stack(
-    [
-        x ** degree
-        for degree in range(
-            layer.n_coeffs
-        )
-    ],
-    axis=1
+degrees = np.arange(
+    1,
+    layer.degree + 1
+)
+
+powers = (
+    x[:, None] ** degrees
 )
 
 contributions = np.sum(
@@ -47,7 +46,42 @@ contributions = np.sum(
     axis=1
 )
 
-print("\nHidden node:", HIDDEN_NODE)
+bias = layer.b[
+    HIDDEN_NODE
+]
+
+reconstructed = (
+    bias
+    + np.sum(contributions)
+)
+
+contribution_image = (
+    contributions.reshape(
+        28,
+        28
+    )
+)
+
+limit = np.max(
+    np.abs(
+        contribution_image
+    )
+)
+
+print(
+    "\nHidden node:",
+    HIDDEN_NODE
+)
+
+print(
+    "Bias:",
+    bias
+)
+
+print(
+    "Edge contribution sum:",
+    np.sum(contributions)
+)
 
 print(
     "Hidden activation:",
@@ -55,29 +89,16 @@ print(
 )
 
 print(
-    "Sum of edge contributions:",
-    np.sum(contributions)
+    "Reconstructed:",
+    reconstructed
 )
 
 print(
     "Difference:",
     abs(
         hidden[HIDDEN_NODE]
-        - np.sum(contributions)
+        - reconstructed
     )
-)
-
-contribution_image = contributions.reshape(
-    28,
-    28
-)
-
-limit = np.max(
-    np.abs(contribution_image)
-)
-
-plt.figure(
-    figsize=(6, 6)
 )
 
 plt.imshow(
@@ -88,15 +109,15 @@ plt.imshow(
 )
 
 plt.colorbar(
-    label="Edge Contribution"
+    label="Edge contribution"
 )
 
 plt.title(
-    f"Contributions to Hidden Node "
-    f"{HIDDEN_NODE}"
+    f"Kumo hidden node {HIDDEN_NODE} contributions"
 )
 
-plt.axis("off")
+plt.axis(
+    "off"
+)
 
-plt.tight_layout()
 plt.show()
