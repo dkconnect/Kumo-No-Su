@@ -100,7 +100,9 @@ class KumoCanvas:
         self.result_label.config(text="Draw a digit")
 
     def get_kumo_input(self):
+
         image = self.image.copy()
+
         bbox = image.getbbox()
 
         if bbox is None:
@@ -109,12 +111,26 @@ class KumoCanvas:
                 dtype=float
             )
 
-        digit = image.crop(bbox)
+        digit = image.crop(
+            bbox
+        )
+
         width, height = digit.size
 
-        scale = min(20 / width, 20 / height)
-        new_width = max(1, int(width * scale))
-        new_height = max(1, int(height * scale))
+        scale = min(
+            20 / width,
+            20 / height
+        )
+
+        new_width = max(
+            1,
+            int(width * scale)
+        )
+
+        new_height = max(
+            1,
+            int(height * scale)
+        )
 
         digit = digit.resize(
             (new_width, new_height),
@@ -127,12 +143,98 @@ class KumoCanvas:
             0
         )
 
-        x = (MNIST_SIZE - new_width) // 2
-        y = (MNIST_SIZE - new_height) // 2
+        x = (
+            MNIST_SIZE - new_width
+        ) // 2
 
-        centered.paste(digit, (x, y))
-        pixels = np.asarray(centered, dtype=float)
+        y = (
+            MNIST_SIZE - new_height
+        ) // 2
+
+        centered.paste(
+            digit,
+            (x, y)
+        )
+
+        pixels = np.asarray(
+            centered,
+            dtype=float
+        )
+
+        total = np.sum(pixels)
+
+        if total > 0:
+
+            rows = np.arange(
+                MNIST_SIZE
+            )
+
+            cols = np.arange(
+                MNIST_SIZE
+            )
+
+            center_y = np.sum(
+                rows[:, None] * pixels
+            ) / total
+
+            center_x = np.sum(
+                cols[None, :] * pixels
+            ) / total
+
+            target = (
+                MNIST_SIZE - 1
+            ) / 2
+
+            shift_x = int(
+                round(target - center_x)
+            )
+
+            shift_y = int(
+                round(target - center_y)
+            )
+
+            shifted = np.zeros_like(
+                pixels
+            )
+
+            source_x1 = max(
+                0,
+                -shift_x
+            )
+
+            source_x2 = min(
+                MNIST_SIZE,
+                MNIST_SIZE - shift_x
+            )
+
+            source_y1 = max(
+                0,
+                -shift_y
+            )
+
+            source_y2 = min(
+                MNIST_SIZE,
+                MNIST_SIZE - shift_y
+            )
+
+            target_x1 = source_x1 + shift_x
+            target_x2 = source_x2 + shift_x
+
+            target_y1 = source_y1 + shift_y
+            target_y2 = source_y2 + shift_y
+
+            shifted[
+                target_y1:target_y2,
+                target_x1:target_x2
+            ] = pixels[
+                source_y1:source_y2,
+                source_x1:source_x2
+            ]
+
+            pixels = shifted
+
         pixels = pixels / 255.0
+
         return pixels
 
     def predict(self):
