@@ -2,7 +2,11 @@ import numpy as np
 
 from kumo.network import KumoNetwork
 
+
+np.random.seed(42)
+
 network = KumoNetwork()
+
 network.add_layer(
     n_inputs=2,
     n_outputs=3,
@@ -22,7 +26,7 @@ X = np.array([
     [1.0, 1.0]
 ])
 
-Y = np.array([
+y = np.array([
     [0.0],
     [1.0],
     [1.0],
@@ -30,6 +34,10 @@ Y = np.array([
 ])
 
 predictions = network.forward(X)
+
+error = predictions - y
+
+gradients = network.backward(error)
 
 print("Input shape:")
 print(X.shape)
@@ -40,25 +48,44 @@ print(predictions.shape)
 print("\nPredictions:")
 print(predictions)
 
-error = predictions - Y
-gradients = network.backward(
-    error
-)
-
 print("\nError shape:")
 print(error.shape)
 
 print("\nGradient shapes:")
 
-for index, gradient in enumerate(
-    gradients
-):
+for i, (
+    coefficient_gradients,
+    bias_gradients
+) in enumerate(gradients):
+
     print(
-        f"Layer {index + 1}: "
-        f"{gradient.shape}"
+        f"Layer {i + 1} "
+        f"coefficients: "
+        f"{coefficient_gradients.shape}"
     )
 
-print("\nExpected:")
-print("Predictions: (4, 1)")
-print("Layer 1 gradient: (2, 3, 3)")
-print("Layer 2 gradient: (3, 1, 3)")
+    print(
+        f"Layer {i + 1} "
+        f"bias: "
+        f"{bias_gradients.shape}"
+    )
+
+network.update(
+    gradients,
+    learning_rate=0.001
+)
+
+new_predictions = network.forward(X)
+
+print("\nPredictions after one update:")
+print(new_predictions)
+
+print("\nMaximum prediction change:")
+print(
+    np.max(
+        np.abs(
+            new_predictions
+            - predictions
+        )
+    )
+)

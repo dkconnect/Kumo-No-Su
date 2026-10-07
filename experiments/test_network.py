@@ -1,5 +1,9 @@
 import numpy as np
+
 from kumo.network import KumoNetwork
+
+
+np.random.seed(42)
 
 network = KumoNetwork()
 
@@ -20,9 +24,11 @@ x = np.array([
     3.0
 ])
 
-prediction = network.forward(x)
+target = np.array([
+    5.0
+])
 
-target = np.array([5.0])
+prediction = network.forward(x)
 
 error = prediction - target
 
@@ -37,20 +43,36 @@ print(prediction)
 print("\nNetwork layers:")
 print(len(network.layers))
 
-print("\nLayer 1 coefficients:")
-print(network.layers[0].C.shape)
+for i, layer in enumerate(network.layers):
+    print(f"\nLayer {i + 1} coefficients:")
+    print(layer.C.shape)
 
-print("\nLayer 2 coefficients:")
-print(network.layers[1].C.shape)
+    print(f"Layer {i + 1} bias:")
+    print(layer.b.shape)
 
 print("\nError:")
 print(error)
 
-print("\nNumber of gradient arrays:")
+print("\nNumber of gradient groups:")
 print(len(gradients))
 
-print("\nLayer 1 gradient shape:")
-print(gradients[0].shape)
+for i, (
+    coefficient_gradients,
+    bias_gradients
+) in enumerate(gradients):
 
-print("\nLayer 2 gradient shape:")
-print(gradients[1].shape)
+    print(
+        f"\nLayer {i + 1} "
+        "coefficient gradient shape:"
+    )
+    print(
+        coefficient_gradients.shape
+    )
+
+    print(
+        f"Layer {i + 1} "
+        "bias gradient shape:"
+    )
+    print(
+        bias_gradients.shape
+    )

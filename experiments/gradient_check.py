@@ -1,12 +1,15 @@
 import numpy as np
+
 from kumo.network import KumoNetwork
+
 
 np.random.seed(42)
 
-EPSILON = 1e-5
-TOLERANCE = 1e-6
+epsilon = 1e-6
+tolerance = 1e-5
 
 network = KumoNetwork()
+
 network.add_layer(
     n_inputs=2,
     n_outputs=3,
@@ -21,7 +24,7 @@ network.add_layer(
 
 x = np.array([
     0.4,
-    0.7
+    -0.7
 ])
 
 target = np.array([
@@ -29,168 +32,187 @@ target = np.array([
 ])
 
 
-def calculate_loss():
+def loss():
     prediction = network.forward(x)
-    error = prediction - target
+
     return 0.5 * np.sum(
-        error ** 2
+        (prediction - target) ** 2
     )
 
 
 prediction = network.forward(x)
+
 error = prediction - target
+
 analytical_gradients = network.backward(
     error
 )
 
-print()
-print("Kumo Full Gradient Check")
-print()
-
-total_checked = 0
+checked = 0
 failed = 0
-
 largest_difference = 0.0
-largest_location = None
+
+print("Kumo Full Gradient Check")
 
 for layer_index, layer in enumerate(
     network.layers
 ):
+
     print(
-        f"Checking Layer "
+        f"\nChecking Layer "
         f"{layer_index + 1}..."
     )
 
-    layer_gradient = (
-        analytical_gradients[
-            layer_index
-        ]
-    )
+    (
+        coefficient_gradients,
+        bias_gradients
+    ) = analytical_gradients[
+        layer_index
+    ]
 
-    for input_index in range(
-        layer.n_inputs
+    for index in np.ndindex(
+        layer.C.shape
     ):
 
-        for output_index in range(
-            layer.n_outputs
-        ):
+        original = layer.C[index]
 
-            for coefficient_index in range(
-                layer.n_coeffs
-            ):
+        layer.C[index] = (
+            original + epsilon
+        )
 
-                original_value = layer.C[
-                    input_index,
-                    output_index,
-                    coefficient_index
-                ]
+        loss_plus = loss()
 
-                layer.C[
-                    input_index,
-                    output_index,
-                    coefficient_index
-                ] = (
-                    original_value
-                    + EPSILON
-                )
-                loss_plus = calculate_loss()
+        layer.C[index] = (
+            original - epsilon
+        )
 
-                layer.C[
-                    input_index,
-                    output_index,
-                    coefficient_index
-                ] = (
-                    original_value
-                    - EPSILON
-                )
-                loss_minus = calculate_loss()
+        loss_minus = loss()
 
-                layer.C[
-                    input_index,
-                    output_index,
-                    coefficient_index
-                ] = original_value
+        layer.C[index] = original
 
-                numerical_gradient = (
-                    loss_plus
-                    - loss_minus
-                ) / (
-                    2.0 * EPSILON
-                )
+        numerical_gradient = (
+            loss_plus - loss_minus
+        ) / (
+            2.0 * epsilon
+        )
 
-                analytical_gradient = (
-                    layer_gradient[
-                        input_index,
-                        output_index,
-                        coefficient_index
-                    ]
-                )
+        analytical_gradient = (
+            coefficient_gradients[
+                index
+            ]
+        )
 
-                difference = abs(
-                    analytical_gradient
-                    - numerical_gradient
-                )
+        difference = abs(
+            numerical_gradient
+            - analytical_gradient
+        )
 
-                total_checked += 1
-                if difference > largest_difference:
+        largest_difference = max(
+            largest_difference,
+            difference
+        )
 
-                    largest_difference = (
-                        difference
-                    )
+        checked += 1
 
-                    largest_location = (
-                        layer_index,
-                        input_index,
-                        output_index,
-                        coefficient_index
-                    )
+        if difference > tolerance:
+            failed += 1
 
-                if difference > TOLERANCE:
+            print(
+                "FAILED coefficient "
+                f"{index}"
+            )
 
-                    failed += 1
-                    print(
-                        "FAIL"
-                        f"C[{input_index}, "
-                        f"{output_index}, "
-                        f"{coefficient_index}]"
-                    )
+            print(
+                "Analytical:",
+                analytical_gradient
+            )
 
-                    print("analytical = "f"{analytical_gradient:.10f}")
-                    print("numerical  = "f"{numerical_gradient:.10f}")
-                    print("difference = "f"{difference:.10e}")
+            print(
+                "Numerical:",
+                numerical_gradient
+            )
 
-    print(f"Layer {layer_index + 1} "f"finished.")
-    print()
+            print(
+                "Difference:",
+                difference
+            )
 
-print()
-print("Gradient Check Summary")
-print()
+    for index in np.ndindex(
+        layer.b.shape
+    ):
 
-print(f"Coefficients checked: "f"{total_checked}")
-print(f"Failed: "f"{failed}")
-print(f"Largest difference: "f"{largest_difference:.10e}"
+        original = layer.b[index]
+
+        layer.b[index] = (
+            original + epsilon
+        )
+
+        loss_plus = loss()
+
+        layer.b[index] = (
+            original - epsilon
+        )
+
+        loss_minus = loss()
+
+        layer.b[index] = original
+
+        numerical_gradient = (
+            loss_plus - loss_minus
+        ) / (
+            2.0 * epsilon
+        )
+
+        analytical_gradient = (
+            bias_gradients[
+                index
+            ]
+        )
+
+        difference = abs(
+            numerical_gradient
+            - analytical_gradient
+        )
+
+        largest_difference = max(
+            largest_difference,
+            difference
+        )
+
+        checked += 1
+
+        if difference > tolerance:
+            failed += 1
+
+            print(
+                "FAILED bias "
+                f"{index}"
+            )
+
+            print(
+                "Analytical:",
+                analytical_gradient
+            )
+
+            print(
+                "Numerical:",
+                numerical_gradient
+            )
+
+            print(
+                "Difference:",
+                difference
+            )
+
+print("\nResults")
+print("Parameters checked:", checked)
+print("Failed:", failed)
+print(
+    "Largest difference:",
+    largest_difference
 )
 
-if largest_location is not None:
-
-    (
-        layer_index,
-        input_index,
-        output_index,
-        coefficient_index
-    ) = largest_location
-
-    print(
-        "Largest difference at: "
-        f"Layer {layer_index + 1}, "
-        f"C[{input_index}, "
-        f"{output_index}, "
-        f"{coefficient_index}]"
-    )
-print()
-
 if failed == 0:
-    print("PASS: All Kumo gradients agree with numerical derivatives.")
-
+    print("\nPASS")
 else:
-    print("FAIL: Some Kumo gradients do not match numerical derivatives.")
+    print("\nFAIL")
