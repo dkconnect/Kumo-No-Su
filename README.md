@@ -37,17 +37,17 @@ function.
 
 The current Kumo v2 edge is
 
-$$
+```math
 \phi_{ij}(x_i)=\sum_{d=1}^{D} c_{ijd}x_i^d
-$$
+```
 
 and a node computes
 
-$$
+```math
 \boxed{
 y_j=b_j+\sum_i\phi_{ij}(x_i)
 }
-$$
+```
 
 So the edge owns the input-dependent function and the node owns the
 baseline bias.
@@ -83,9 +83,9 @@ The test set was not used for training or checkpoint selection.
 In a standard neural network, a connection typically contributes
 something like
 
-$$
+```math
 wx
-$$
+```
 
 and nonlinearity is usually introduced by a fixed activation function at
 the node.
@@ -93,9 +93,9 @@ the node.
 My original Kumo idea moved more of the learnable behavior onto the
 connections themselves:
 
-$$
+```math
 \phi(x)=c_0+c_1x+c_2x^2+\dots+c_kx^k
-$$
+```
 
 Each connection can therefore learn its own curve instead of only
 learning one scalar multiplier.
@@ -169,46 +169,46 @@ final code as if it appeared fully formed.
 
 The first useful mathematical object was one learnable polynomial:
 
-$$
+```math
 \phi(x)=c_0+c_1x+c_2x^2
-$$
+```
 
 For each coefficient,
 
-$$
+```math
 \frac{\partial\phi}{\partial c_d}=x^d
-$$
+```
 
 Using squared error,
 
-$$
+```math
 L=\frac12(\hat y-y)^2
-$$
+```
 
 gives
 
-$$
+```math
 \frac{\partial L}{\partial \hat y}=\hat y-y
-$$
+```
 
 and therefore
 
-$$
+```math
 \frac{\partial L}{\partial c_d}
 =
 (\hat y-y)x^d
-$$
+```
 
 A gradient-descent update is
 
-$$
+```math
 c_d^{new}
 =
 c_d^{old}
 -
 \eta
 \frac{\partial L}{\partial c_d}
-$$
+```
 
 That was the first complete learning loop:
 
@@ -235,15 +235,15 @@ outputs, batches, and multiple layers.
 
 For a node receiving several inputs,
 
-$$
+```math
 y_j=\sum_i\phi_{ij}(x_i)
-$$
+```
 
 in the original formulation.
 
 For polynomial degree 2:
 
-$$
+```math
 \phi_{ij}(x_i)
 =
 c_{ij0}
@@ -251,7 +251,7 @@ c_{ij0}
 c_{ij1}x_i
 +
 c_{ij2}x_i^2
-$$
+```
 
 This meant every input/output pair had its own set of polynomial
 coefficients.
@@ -276,27 +276,27 @@ That representation became Kumo v1.
 
 The derivative of a polynomial edge with respect to its input is
 
-$$
+```math
 \frac{d\phi}{dx}
 =
 c_1+2c_2x+3c_3x^2+\dots
-$$
+```
 
 For an upstream gradient
 
-$$
+```math
 g_j=\frac{\partial L}{\partial y_j}
-$$
+```
 
-the gradient passed to input (x_i) is
+the gradient passed to input `x_i` is
 
-$$
+```math
 \frac{\partial L}{\partial x_i}
 =
 \sum_j
 g_j
 \frac{\partial \phi_{ij}(x_i)}{\partial x_i}
-$$
+```
 
 This is the chain rule that allows Kumo layers to be stacked.
 
@@ -332,14 +332,17 @@ plotting the actual functions learned by individual edges.
 
 ## Learned edge functions
 
-![Layer 1 learned edge functions](images/layer_1_edges.png)
-
-![Layer 2 learned edge functions](images/layer_2_edges.png)
-
+<p align="center">
+  <img src="images/layer_1_edges.png" alt="Layer 1 learned edge functions"/>
+</p>
+<p align="center">
+  <img src="images/layer_2_edges.png" alt="Layer 2 learned edge functions"/>
+</p>
 ## Learned polynomial web
 
-![Kumo polynomial web](outputs/kumo_web.png)
-
+<p align="center">
+  <img src="outputs/kumo_web.png" alt="Kumo polynomial web"/>
+</p>
 The graph is a useful representation of the architecture: nodes
 aggregate information, while the edges contain learned mathematical
 behavior.
@@ -350,15 +353,15 @@ behavior.
 
 A degree-1 Kumo edge is
 
-$$
+```math
 \phi_{ij}(x_i)=c_{ij1}x_i
-$$
+```
 
 so a layer is
 
-$$
+```math
 y_j=b_j+\sum_i c_{ij1}x_i
-$$
+```
 
 which is simply an affine transformation.
 
@@ -367,11 +370,11 @@ another affine transformation.
 
 Degree 2 changes that:
 
-$$
+```math
 \phi_{ij}(x_i)
 =
 c_{ij1}x_i+c_{ij2}x_i^2
-$$
+```
 
 Now the network contains genuine nonlinear terms.
 
@@ -379,10 +382,15 @@ This showed up in the MNIST experiments as well.
 
 Under the same general protocol:
 
-| Model | Test accuracy | 
-| -------- | -------- |
-| Degree 1 | 88.89 % | 
-| Degree 2 | **91.50 %** |
+<div align="center">
+<table>
+  <thead><tr><th align="center">Model</th><th align="center">Test accuracy</th></tr></thead>
+  <tbody>
+    <tr><td align="center">Degree 1</td><td align="center">88.89%</td></tr>
+    <tr><td align="center">Degree 2</td><td align="center"><strong>91.50%</strong></td></tr>
+  </tbody>
+</table>
+</div>
 
 This is useful experimental evidence for the value of the quadratic
 terms in this implementation, but it is **not a capacity-matched
@@ -507,40 +515,40 @@ Kumo's raw output is a vector of logits:
 
 Softmax converts these into probabilities:
 
-$$
+```math
 p_i
 =
 \frac{e^{z_i-\max(z)}}{
 \sum_j e^{z_j-\max(z)}
 }
-$$
+```
 
 Subtracting the maximum logit improves numerical stability.
 
 Cross-entropy for a one-hot target is
 
-$$
+```math
 L=-\sum_i y_i\log p_i
-$$
+```
 
 which reduces to
 
-$$
+```math
 L=-\log p_y
-$$
+```
 
 for the correct class.
 
 The especially useful result is the combined softmax + cross-entropy
 gradient:
 
-$$
+```math
 \boxed{
 \frac{\partial L}{\partial z_i}
 =
 p_i-y_i
 }
-$$
+```
 
 ------------------------------------------------------------------------
 
@@ -548,14 +556,19 @@ $$
 
 The difference was immediate.
 
-      Epoch   MSE run   Softmax + CE
-  --------- --------- --------------
-    Initial      8.2%           8.2%
-          1     15.4%      **19.2%**
-          4     35.0%      **59.8%**
-          5     38.4%      **66.2%**
-          7     50.2%      **74.0%**
-         10     57.2%      **70.0%**
+<div align="center">
+<table>
+  <thead><tr><th align="center">Epoch</th><th align="center">MSE run</th><th align="center">Softmax + CE</th></tr></thead>
+  <tbody>
+    <tr><td align="center">Initial</td><td align="center">8.2%</td><td align="center">8.2%</td></tr>
+    <tr><td align="center">1</td><td align="center">15.4%</td><td align="center"><strong>19.2%</strong></td></tr>
+    <tr><td align="center">4</td><td align="center">35.0%</td><td align="center"><strong>59.8%</strong></td></tr>
+    <tr><td align="center">5</td><td align="center">38.4%</td><td align="center"><strong>66.2%</strong></td></tr>
+    <tr><td align="center">7</td><td align="center">50.2%</td><td align="center"><strong>74.0%</strong></td></tr>
+    <tr><td align="center">10</td><td align="center">57.2%</td><td align="center"><strong>70.0%</strong></td></tr>
+  </tbody>
+</table>
+</div>
 
 The 2,000-image softmax experiment produced:
 
@@ -599,19 +612,24 @@ The network can be confidently wrong.
 
 The training progression was:
 
-  Experiment             Training data           Best accuracy
-  -------------------- --------------- -----------------------
-  MSE prototype                  2,000                   57.2%
-  Softmax + CE                   2,000        74.0% validation
-  Softmax + CE                  10,000        89.4% validation
-  Full experiment               50,000   **91.84% validation**
-  Untouched test set            10,000         **91.50% test**
+<div align="center">
+<table>
+  <thead><tr><th align="center">Experiment</th><th align="center">Training data</th><th align="center">Best accuracy</th></tr></thead>
+  <tbody>
+    <tr><td align="center">MSE prototype</td><td align="center">2,000</td><td align="center">57.2%</td></tr>
+    <tr><td align="center">Softmax + CE</td><td align="center">2,000</td><td align="center">74.0% validation</td></tr>
+    <tr><td align="center">Softmax + CE</td><td align="center">10,000</td><td align="center">89.4% validation</td></tr>
+    <tr><td align="center">Full experiment</td><td align="center">50,000</td><td align="center"><strong>91.84% validation</strong></td></tr>
+    <tr><td align="center">Untouched test set</td><td align="center">10,000</td><td align="center"><strong>91.50% test</strong></td></tr>
+  </tbody>
+</table>
+</div>
 
 The final validation/test gap was:
 
-$$
+```math
 91.84-91.50=0.34
-$$
+```
 
 percentage points.
 
@@ -683,17 +701,17 @@ c0, c1, c2
 
 For the MNIST architecture:
 
-$$
+```math
 784(16)(3)+16(10)(3)
-$$
+```
 
-$$
+```math
 =37,632+480
-$$
+```
 
-$$
+```math
 =\boxed{38,112}
-$$
+```
 
 learned coefficients.
 
@@ -708,7 +726,7 @@ Then an architectural redundancy became obvious.
 
 In Kumo v1, a node received:
 
-$$
+```math
 y_j
 =
 \sum_i
@@ -719,11 +737,11 @@ c_{ij1}x_i
 +
 c_{ij2}x_i^2
 \right)
-$$
+```
 
 Rearranging gives:
 
-$$
+```math
 y_j
 =
 \underbrace{
@@ -736,20 +754,20 @@ c_{ij1}x_i
 +
 c_{ij2}x_i^2
 \right)
-$$
+```
 
 All of the constant edge terms feeding the same node collapse into one
 number.
 
 Define
 
-$$
+```math
 b_j=\sum_i c_{ij0}
-$$
+```
 
 and the layer becomes
 
-$$
+```math
 \boxed{
 y_j
 =
@@ -762,22 +780,22 @@ c_{ij1}x_i
 c_{ij2}x_i^2
 \right)
 }
-$$
+```
 
-This means separate (c_0) values on every incoming edge are
+This means separate `c0` values on every incoming edge are
 representationally redundant.
 
 There was also a training-level clue.
 
 For every incoming edge constant:
 
-$$
+```math
 \frac{\partial L}{\partial c_{ij0}}
 =
 \frac{\partial L}{\partial y_j}
-$$
+```
 
-Every (c_0) feeding the same node receives the same gradient.
+Every `c0` feeding the same node receives the same gradient.
 
 When they are initialized identically, they therefore evolve identically
 apart from floating-point effects.
@@ -793,15 +811,15 @@ intuition.
 
 The existing v1 MNIST model was compressed mathematically:
 
-$$
+```math
 b_j=\sum_i c_{ij0}
-$$
+```
 
 while the remaining coefficients became:
 
-$$
+```math
 C_{ij}=[c_{ij1},c_{ij2},\dots]
-$$
+```
 
 The original and compressed networks were compared across 10,000 MNIST
 test images.
@@ -809,14 +827,14 @@ test images.
 Results:
 
 ``` text
-maximum hidden difference: ~1.7586e-13
-maximum output difference: ~9.956e-13
+maximum hidden difference: 0.0
+maximum output difference: 0.0
 prediction mismatches:     0
 original accuracy:         91.50%
 compressed accuracy:       91.50%
 ```
 
-The tiny numerical differences are floating-point effects.
+The final regression test produced exact equality for both recorded maximum differences.
 
 There was no representational loss.
 
@@ -828,22 +846,22 @@ That experiment justified changing the architecture.
 
 Kumo v2 makes the separation explicit:
 
-$$
+```math
 \boxed{
 y_j=b_j+\sum_i\phi_{ij}(x_i)
 }
-$$
+```
 
 with
 
-$$
+```math
 \boxed{
 \phi_{ij}(x_i)
 =
 \sum_{d=1}^{D}
 c_{ijd}x_i^d
 }
-$$
+```
 
 The node owns:
 
@@ -1016,10 +1034,10 @@ still containing subtle derivative errors, so numerical gradient
 checking became one of the most important validation tools in the
 project.
 
-For a parameter (`\theta`{=tex}), the numerical derivative is
+For a parameter `θ`, the numerical derivative is
 approximated by:
 
-$$
+```math
 \frac{\partial L}{\partial\theta}
 \approx
 \frac{
@@ -1027,7 +1045,7 @@ L(\theta+\epsilon)-L(\theta-\epsilon)
 }{
 2\epsilon
 }
-$$
+```
 
 and compared against the analytical gradient produced by Kumo's backward
 pass.
@@ -1140,17 +1158,18 @@ Difference: [0.]
 That exact zero difference was an important sanity check: the visual
 explanation and the actual network were computing the same model.
 
-![Kumo forward-pass reconstruction](outputs/kumo_forward.png)
-
+<p align="center">
+  <img src="outputs/kumo_forward.png" alt="Kumo forward-pass reconstruction"/>
+</p>
 ------------------------------------------------------------------------
 
 # A useful v2 consequence: zero input means zero edge contribution
 
 In v2 the edge function has no constant term:
 
-$$
+```math
 \phi(0)=0
-$$
+```
 
 For the XOR forward-pass example above, the first input was zero.
 
@@ -1217,8 +1236,9 @@ can be plotted directly.
 
 ## One learned edge
 
-![One learned Kumo edge](outputs/kumo_edge.png)
-
+<p align="center">
+  <img src="outputs/kumo_edge.png" alt="One learned Kumo edge"/>
+</p>
 This graph shows the response curve learned by a specific pixel →
 hidden-node connection.
 
@@ -1232,15 +1252,17 @@ Instead of asking only "what is the weight?", Kumo lets me ask:
 
 ## Strong edge functions
 
-![Strongest edge functions](outputs/strongest_edge.png)
-
+<p align="center">
+  <img src="outputs/strongest_edge.png" alt="Strongest edge functions"/>
+</p>
 This compares several influential learned edge curves feeding a hidden
 node.
 
 ## Pixel contribution map
 
-![Pixel contribution map](outputs/contribution%20map.png)
-
+<p align="center">
+  <img src="outputs/contribution%20map.png" alt="Pixel contribution map"/>
+</p>
 This maps the signed contribution of input pixels to a hidden node back
 into the original image geometry.
 
@@ -1249,25 +1271,29 @@ spatially.
 
 ## Input and contribution inspection
 
-![Input and contribution inspection](outputs/inspect_contri.png)
-
+<p align="center">
+  <img src="outputs/inspect_contri.png" alt="Input and contribution inspection"/>
+</p>
 This places an MNIST input beside its contribution map.
 
 ## Hidden activations
 
-![Hidden activations](outputs/hidden_nodes_v2.png)
-
+<p align="center">
+  <img src="outputs/hidden_nodes_v2.png" alt="Hidden activations"/>
+</p>
 The hidden layer can also be inspected as a vector of activations.
 
 An earlier version of this visualization is preserved as part of the
 project's development history:
 
-![Earlier hidden-node visualization](outputs/hidden%20nodes.png)
-
+<p align="center">
+  <img src="outputs/hidden%20nodes.png" alt="Earlier hidden-node visualization"/>
+</p>
 ## Combined inspection
 
-![Combined Kumo inspection](outputs/31V.png)
-
+<p align="center">
+  <img src="outputs/31V.png" alt="Combined Kumo inspection"/>
+</p>
 This combines multiple parts of the explanation pipeline for a
 prediction.
 
@@ -1277,13 +1303,13 @@ prediction.
 
 For a degree-2 v2 edge:
 
-$$
+```math
 \phi(x)=c_1x+c_2x^2
-$$
+```
 
 A hidden node can be decomposed into:
 
-$$
+```math
 h
 =
 b
@@ -1291,7 +1317,7 @@ b
 \sum_i c_{i1}x_i
 +
 \sum_i c_{i2}x_i^2
-$$
+```
 
 One inspected hidden node produced:
 
@@ -1408,9 +1434,9 @@ Preprocessing therefore became important.
 The drawing is converted to grayscale, resized/placed into the
 MNIST-like input representation, normalized, and center-aligned.
 
-For image intensity (p\_{xy}), the center of mass is:
+For image intensity `p_xy`, the center of mass is:
 
-$$
+```math
 c_x
 =
 \frac{
@@ -1418,9 +1444,9 @@ c_x
 }{
 \sum_{x,y}p_{xy}
 }
-$$
+```
 
-$$
+```math
 c_y
 =
 \frac{
@@ -1428,13 +1454,13 @@ c_y
 }{
 \sum_{x,y}p_{xy}
 }
-$$
+```
 
 For a 28 × 28 image, the target center is:
 
-$$
+```math
 (13.5,13.5)
-$$
+```
 
 The image is shifted toward that center before being flattened into 784
 normalized pixels.
@@ -2120,21 +2146,27 @@ compatibility with the main trained model.
 
 # v1 validation summary
 
-  Check                                  Result
-  -------------------------------------- --------------------------------
-  Original numerical gradient check      PASS, max diff \~1.67e-10
-  v2 layer numerical gradient check      PASS, max diff \~1.07e-10
-  v2 full-network gradient check         PASS, max diff \~2.20e-10
-  v2 save/load                           Exact, max prediction diff 0.0
-  v1 → v2 MNIST conversion               91.50% retained
-  c0 compression prediction mismatches   0 / 10,000
-  c0 compression max output difference   \~9.96e-13
-  Inspector reconstruction error         \~8.88e-16
-  Manual visualizer vs `forward()`       Difference `[0.]`
-  MNIST v2 numerical-health check        Finite throughout
-  Official MNIST split check             PASS
-  Final MNIST validation accuracy        **91.84%**
-  Final untouched MNIST test accuracy    **91.50%**
+<div align="center">
+<table>
+  <thead><tr><th align="center">Check</th><th align="center">Result</th></tr></thead>
+  <tbody>
+    <tr><td align="center">Original numerical gradient check</td><td align="center">PASS, max diff ~1.67e-10</td></tr>
+    <tr><td align="center">v2 layer numerical gradient check</td><td align="center">PASS, max diff ~1.07e-10</td></tr>
+    <tr><td align="center">v2 full-network gradient check</td><td align="center">PASS, max diff ~2.20e-10</td></tr>
+    <tr><td align="center">v2 save/load</td><td align="center">Exact, max prediction diff 0.0</td></tr>
+    <tr><td align="center">v1 → v2 MNIST conversion</td><td align="center">91.50% retained</td></tr>
+    <tr><td align="center">c0 compression prediction mismatches</td><td align="center">0 / 10,000</td></tr>
+    <tr><td align="center">c0 compression max hidden difference</td><td align="center">0.0</td></tr>
+    <tr><td align="center">c0 compression max output difference</td><td align="center">0.0</td></tr>
+    <tr><td align="center">Inspector reconstruction error</td><td align="center">~8.88e-16</td></tr>
+    <tr><td align="center">Manual visualizer vs <code>forward()</code></td><td align="center">Difference <code>[0.]</code></td></tr>
+    <tr><td align="center">MNIST v2 numerical-health check</td><td align="center">Finite throughout</td></tr>
+    <tr><td align="center">Official MNIST split check</td><td align="center">PASS</td></tr>
+    <tr><td align="center">Final MNIST validation accuracy</td><td align="center"><strong>91.84%</strong></td></tr>
+    <tr><td align="center">Final untouched MNIST test accuracy</td><td align="center"><strong>91.50%</strong></td></tr>
+  </tbody>
+</table>
+</div>
 
 ------------------------------------------------------------------------
 
@@ -2162,13 +2194,13 @@ about features that already exist:
 One especially interesting direction is to preserve Kumo's defining idea
 while changing the basis used by each edge:
 
-$$
+```math
 \phi(x)
 =
 \sum_d c_d B_d(x)
-$$
+```
 
-where (B_d) does not have to be a monomial basis.
+where `B_d` does not have to be a monomial basis.
 
 That would keep the "learnable function on every edge" concept while
 opening the architecture to other function families.
