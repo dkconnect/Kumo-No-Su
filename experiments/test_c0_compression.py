@@ -1,7 +1,6 @@
 import numpy as np
 
 from data.load_mnist import load_mnist_split
-from kumo.network import KumoNetwork
 
 
 MODEL_PATH = "models/mnist_full_kumo.npz"
@@ -10,15 +9,53 @@ X_train, y_train, X_test, y_test = (
     load_mnist_split()
 )
 
-network = KumoNetwork.load(
+data = np.load(
     MODEL_PATH
 )
 
+n_layers = int(
+    data["n_layers"][0]
+)
 
-def compressed_forward(layer, x):
+if "format_version" in data.files:
+    raise ValueError(
+        "test_c0_compression.py expects "
+        "a historical v1 model"
+    )
 
-    coefficients = layer.C
+old_layers = []
 
+for layer_index in range(
+    n_layers
+):
+    old_C = data[
+        f"layer_{layer_index}_C"
+    ]
+
+    old_layers.append(
+        old_C
+    )
+
+
+def v1_forward(coefficients, x):
+    output = np.zeros(
+        coefficients.shape[1],
+        dtype=float
+    )
+
+    for degree in range(
+        coefficients.shape[2]
+    ):
+        output += np.sum(
+            coefficients[:, :, degree]
+            * x[:, None] ** degree,
+            axis=0
+        )
+
+    return output
+
+
+def compressed_forward(coefficients, x):
     bias = np.sum(
         coefficients[:, :, 0],
         axis=0
@@ -28,15 +65,10 @@ def compressed_forward(layer, x):
 
     for degree in range(
         1,
-        layer.n_coeffs
+        coefficients.shape[2]
     ):
-
         output += np.sum(
-            coefficients[
-                :,
-                :,
-                degree
-            ]
+            coefficients[:, :, degree]
             * x[:, None] ** degree,
             axis=0
         )
@@ -50,25 +82,30 @@ prediction_mismatches = 0
 normal_correct = 0
 compressed_correct = 0
 
+layer1_C = old_layers[0]
+layer2_C = old_layers[1]
+
 for x, target in zip(
     X_test,
     y_test
 ):
-
-    normal_activations = network.inspect(
+    normal_hidden = v1_forward(
+        layer1_C,
         x
     )
 
-    normal_hidden = normal_activations[1]
-    normal_output = normal_activations[2]
+    normal_output = v1_forward(
+        layer2_C,
+        normal_hidden
+    )
 
     compressed_hidden = compressed_forward(
-        network.layers[0],
+        layer1_C,
         x
     )
 
     compressed_output = compressed_forward(
-        network.layers[1],
+        layer2_C,
         compressed_hidden
     )
 
