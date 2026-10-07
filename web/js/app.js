@@ -68,6 +68,7 @@ const drawingCanvas = new DrawingCanvas(
 
 let network = null;
 let detailedInspection = null;
+let currentPrediction = null;
 
 
 async function loadModel() {
@@ -274,12 +275,14 @@ function inspectHiddenNode(
         index,
         layer.output[index],
         contributions,
-        outputContributions
+        outputContributions,
+        currentPrediction
     );
 
     webDetails.textContent = (
         `Showing the 20 strongest input edges `
-        + `affecting Hidden ${index}.`
+        + `affecting Hidden ${index}. `
+        + `Yellow marks Kumo's predicted digit.`
     );
 
     console.log(
@@ -358,6 +361,8 @@ function predict() {
         }
     }
 
+    currentPrediction = prediction;
+
     const confidence = (
         probabilities[prediction]
         * 100
@@ -400,6 +405,7 @@ function clear() {
     clearWeb();
 
     detailedInspection = null;
+    currentPrediction = null;
 
     predictionElement.textContent = "-";
 

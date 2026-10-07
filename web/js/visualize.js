@@ -27,7 +27,8 @@ function drawHiddenWeb(
     hiddenIndex,
     hiddenValue,
     inputContributions,
-    outputContributions
+    outputContributions,
+    prediction
 ) {
     const context = canvas.getContext(
         "2d"
@@ -87,7 +88,8 @@ function drawHiddenWeb(
 
     drawOutputNodes(
         context,
-        outputContributions
+        outputContributions,
+        prediction
     );
 
     drawLegend(
@@ -368,7 +370,8 @@ function drawOutputEdges(
 
 function drawOutputNodes(
     context,
-    contributions
+    contributions,
+    prediction
 ) {
     contributions.forEach(
         (value, digit) => {
@@ -389,13 +392,19 @@ function drawOutputNodes(
             context.fillStyle = "#18181b";
             context.fill();
 
-            context.strokeStyle = (
-                value >= 0
-                    ? "#4ade80"
-                    : "#f87171"
-            );
+            if (digit === prediction) {
+                context.strokeStyle = "#facc15";
+                context.lineWidth = 5;
+            } else {
+                context.strokeStyle = (
+                    value >= 0
+                        ? "#4ade80"
+                        : "#f87171"
+                );
 
-            context.lineWidth = 2;
+                context.lineWidth = 2;
+            }
+
             context.stroke();
 
             context.fillStyle = "#f4f4f5";
