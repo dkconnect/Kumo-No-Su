@@ -1,10 +1,22 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
+
 from kumo.network import KumoNetwork
 
-network = KumoNetwork.load(
-    "models/xor_kumo.npz"
+
+MODEL_PATH = "models/xor_kumo.npz"
+OUTPUT_DIR = "images"
+
+os.makedirs(
+    OUTPUT_DIR,
+    exist_ok=True
 )
+
+network = KumoNetwork.load(
+    MODEL_PATH
+)
+
 
 def evaluate_polynomial(coefficients, x):
     y = np.zeros_like(
@@ -13,13 +25,20 @@ def evaluate_polynomial(coefficients, x):
     )
 
     for degree, coefficient in enumerate(
-        coefficients
+        coefficients,
+        start=1
     ):
-        y += coefficient * (x ** degree)
+        y += (
+            coefficient
+            * x ** degree
+        )
 
     return y
 
-print("Learned Kumo edge functions:\n")
+
+print(
+    "Learned Kumo edge functions:\n"
+)
 
 for layer_index, layer in enumerate(
     network.layers
@@ -28,14 +47,17 @@ for layer_index, layer in enumerate(
         f"Layer {layer_index + 1}"
     )
 
+    print(
+        "Node biases:",
+        layer.b
+    )
+
     for input_index in range(
         layer.n_inputs
     ):
-
         for output_index in range(
             layer.n_outputs
         ):
-
             coefficients = layer.C[
                 input_index,
                 output_index
@@ -44,29 +66,31 @@ for layer_index, layer in enumerate(
             terms = []
 
             for degree, coefficient in enumerate(
-                coefficients
+                coefficients,
+                start=1
             ):
                 terms.append(
-                    f"{coefficient:+.4f}x^{degree}"
+                    f"{coefficient:+.4f}"
+                    f"x^{degree}"
                 )
-            equation = " ".join(terms)
+
+            equation = " ".join(
+                terms
+            )
 
             print(
                 f"  Edge "
                 f"{input_index + 1} -> "
                 f"{output_index + 1}: "
-                f"φ(x) = {equation}"
+                f"phi(x) = {equation}"
             )
 
     print()
 
 
-# plotting every edge fn.
-
 for layer_index, layer in enumerate(
     network.layers
 ):
-
     n_edges = (
         layer.n_inputs
         * layer.n_outputs
@@ -75,7 +99,10 @@ for layer_index, layer in enumerate(
     fig, axes = plt.subplots(
         n_edges,
         1,
-        figsize=(7, 3 * n_edges)
+        figsize=(
+            7,
+            3 * n_edges
+        )
     )
 
     if n_edges == 1:
@@ -86,12 +113,12 @@ for layer_index, layer in enumerate(
     for input_index in range(
         layer.n_inputs
     ):
-
         for output_index in range(
             layer.n_outputs
         ):
-
-            ax = axes[edge_number]
+            ax = axes[
+                edge_number
+            ]
 
             coefficients = layer.C[
                 input_index,
@@ -132,16 +159,16 @@ for layer_index, layer in enumerate(
             ax.set_title(
                 f"Layer {layer_index + 1} | "
                 f"Input {input_index + 1} "
-                f"→ Output {output_index + 1}"
+                f"-> Output {output_index + 1}"
             )
 
             ax.set_xlabel("x")
-            ax.set_ylabel("φ(x)")
+            ax.set_ylabel("phi(x)")
 
             edge_number += 1
 
     fig.suptitle(
-        f"Kumo No Su — "
+        f"Kumo No Su - "
         f"Layer {layer_index + 1} "
         f"Learned Edge Functions",
         fontsize=16
@@ -149,7 +176,8 @@ for layer_index, layer in enumerate(
 
     fig.tight_layout()
 
-    output_filename = (
+    output_filename = os.path.join(
+        OUTPUT_DIR,
         f"layer_{layer_index + 1}_edges.png"
     )
 
@@ -161,4 +189,5 @@ for layer_index, layer in enumerate(
     print(
         f"Saved: {output_filename}"
     )
+
 plt.show()

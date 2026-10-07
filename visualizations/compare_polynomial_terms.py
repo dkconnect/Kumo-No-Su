@@ -23,11 +23,12 @@ coefficients = layer.C[
     :
 ]
 
-c0 = coefficients[:, 0]
-c1 = coefficients[:, 1]
-c2 = coefficients[:, 2]
+bias = layer.b[
+    HIDDEN_NODE
+]
 
-constant_total = np.sum(c0)
+c1 = coefficients[:, 0]
+c2 = coefficients[:, 1]
 
 print(
     "\nHidden node:",
@@ -35,13 +36,13 @@ print(
 )
 
 print(
-    "Constant baseline:",
-    constant_total
+    "Node bias:",
+    bias
 )
 
 print(
-    "\nDigit | c0       | c1*x     | "
-    "c2*x²    | Activation"
+    "\nDigit | Bias     | c1*x     | "
+    "c2*x^2   | Activation"
 )
 
 print(
@@ -50,14 +51,11 @@ print(
 )
 
 for digit in range(10):
-
     index = np.where(
         y_test == digit
     )[0][0]
 
     x = X_test[index]
-
-    constant = constant_total
 
     linear = np.sum(
         c1 * x
@@ -68,15 +66,28 @@ for digit in range(10):
     )
 
     activation = (
-        constant
+        bias
         + linear
         + quadratic
     )
 
+    real_activation = layer.forward(
+        x
+    )[HIDDEN_NODE]
+
     print(
         f"{digit:5d} | "
-        f"{constant:8.4f} | "
+        f"{bias:8.4f} | "
         f"{linear:8.4f} | "
         f"{quadratic:8.4f} | "
         f"{activation:10.4f}"
     )
+
+    if not np.isclose(
+        activation,
+        real_activation
+    ):
+        raise RuntimeError(
+            "Polynomial decomposition "
+            "does not match KumoLayer.forward()"
+        )

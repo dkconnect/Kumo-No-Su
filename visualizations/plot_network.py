@@ -1,12 +1,13 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+
 from kumo.network import KumoNetwork
+
 
 MODEL_PATH = "models/xor_kumo.npz"
 OUTPUT_PATH = "outputs/kumo_web.png"
 
-# load trained kumo
 network = KumoNetwork.load(
     MODEL_PATH
 )
@@ -15,8 +16,6 @@ os.makedirs(
     "outputs",
     exist_ok=True
 )
-
-# node positions 
 
 input_positions = [
     (0.0, 0.7),
@@ -33,20 +32,18 @@ output_positions = [
     (2.0, 0.5)
 ]
 
-# for formatting poly.
 
 def format_polynomial(coefficients):
     terms = []
 
     for degree, coefficient in enumerate(
-        coefficients
+        coefficients,
+        start=1
     ):
-        if degree == 0:
-            term = f"{coefficient:+.2f}"
-
-        elif degree == 1:
-            term = f"{coefficient:+.2f}x"
-
+        if degree == 1:
+            term = (
+                f"{coefficient:+.2f}x"
+            )
         else:
             term = (
                 f"{coefficient:+.2f}"
@@ -57,46 +54,47 @@ def format_polynomial(coefficients):
 
     return " ".join(terms)
 
-def edge_strength(coefficients):
-    """
-    Simple visualization metric.
-    """
 
+def edge_strength(coefficients):
     return np.linalg.norm(
         coefficients
     )
+
 
 fig, ax = plt.subplots(
     figsize=(14, 8)
 )
 
-# drawing layer 1 edge
-
 layer1 = network.layers[0]
+
 for input_index in range(
     layer1.n_inputs
 ):
-
     for hidden_index in range(
         layer1.n_outputs
     ):
         start = input_positions[
             input_index
         ]
+
         end = hidden_positions[
             hidden_index
         ]
+
         coefficients = layer1.C[
             input_index,
             hidden_index
         ]
+
         strength = edge_strength(
             coefficients
         )
+
         width = (
             1.0
             + 2.0 * strength
         )
+
         ax.plot(
             [start[0], end[0]],
             [start[1], end[1]],
@@ -104,7 +102,7 @@ for input_index in range(
             alpha=0.55,
             zorder=1
         )
-        # Midpoint
+
         mid_x = (
             start[0] + end[0]
         ) / 2
@@ -112,9 +110,11 @@ for input_index in range(
         mid_y = (
             start[1] + end[1]
         ) / 2
+
         equation = format_polynomial(
             coefficients
         )
+
         ax.text(
             mid_x,
             mid_y,
@@ -130,13 +130,12 @@ for input_index in range(
             zorder=3
         )
 
-# drawing layer 2 edge
 
 layer2 = network.layers[1]
+
 for hidden_index in range(
     layer2.n_inputs
 ):
-
     start = hidden_positions[
         hidden_index
     ]
@@ -192,11 +191,10 @@ for hidden_index in range(
         zorder=3
     )
 
-# drawing input nodes
+
 for index, position in enumerate(
     input_positions
 ):
-
     ax.scatter(
         position[0],
         position[1],
@@ -215,11 +213,10 @@ for index, position in enumerate(
         zorder=6
     )
 
-# hidden nodes
+
 for index, position in enumerate(
     hidden_positions
 ):
-
     ax.scatter(
         position[0],
         position[1],
@@ -230,15 +227,16 @@ for index, position in enumerate(
     ax.text(
         position[0],
         position[1],
-        f"h{index + 1}",
+        f"h{index + 1}\n"
+        f"b={layer1.b[index]:+.2f}",
         ha="center",
         va="center",
-        fontsize=13,
+        fontsize=10,
         fontweight="bold",
         zorder=6
     )
 
-# output nodes
+
 output_position = output_positions[0]
 
 ax.scatter(
@@ -251,10 +249,11 @@ ax.scatter(
 ax.text(
     output_position[0],
     output_position[1],
-    "ŷ",
+    "y\n"
+    f"b={layer2.b[0]:+.2f}",
     ha="center",
     va="center",
-    fontsize=16,
+    fontsize=11,
     fontweight="bold",
     zorder=6
 )
@@ -288,7 +287,7 @@ ax.text(
 
 ax.set_title(
     "Kumo No Su\n"
-    "Learned Polynomial",
+    "Learned Polynomial Web",
     fontsize=20,
     pad=20
 )
@@ -303,9 +302,7 @@ ax.set_ylim(
     1.05
 )
 
-ax.axis(
-    "off"
-)
+ax.axis("off")
 
 plt.tight_layout()
 

@@ -1,33 +1,19 @@
 import numpy as np
+
 from data.load_mnist import load_mnist
 from kumo.network import KumoNetwork
 
+
 np.random.seed(42)
-TRAIN_SIZE = 2000
+
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 
-np.seterr(
-    over="ignore",
-    invalid="ignore"
-)
-
 X, y = load_mnist()
-X_train = X[:TRAIN_SIZE]
-y_train = y[:TRAIN_SIZE]
 
-def one_hot(labels, n_classes=10):
-    encoded = np.zeros(
-        (len(labels), n_classes)
-    )
+X_train = X[:50000]
+y_train = y[:50000]
 
-    encoded[
-        np.arange(len(labels)),
-        labels
-    ] = 1.0
-    return encoded
-
-Y_train = one_hot(y_train)
 network = KumoNetwork()
 
 network.add_layer(
@@ -42,77 +28,156 @@ network.add_layer(
     degree=2
 )
 
-def stats(name, array):
-    finite = np.all(
-        np.isfinite(array)
+
+def one_hot(labels):
+    targets = np.zeros(
+        (len(labels), 10)
     )
 
+    targets[
+        np.arange(len(labels)),
+        labels
+    ] = 1.0
+
+    return targets
+
+
+def stats(name, array):
     print(
         f"{name:<18} "
-        f"min={np.nanmin(array):>12.5e}  "
-        f"max={np.nanmax(array):>12.5e}  "
-        f"mean={np.nanmean(array):>12.5e}  "
-        f"finite={finite}"
+        f"min={np.min(array): .5e}  "
+        f"max={np.max(array): .5e}  "
+        f"mean={np.mean(array): .5e}  "
+        f"finite={np.all(np.isfinite(array))}"
     )
 
-indices = np.random.permutation(
-    TRAIN_SIZE
-)
-
-X_train = X_train[indices]
-Y_train = Y_train[indices]
-y_train = y_train[indices]
 
 print("\nDebugging first epoch...\n")
 
-for batch_number, start in enumerate(
-    range(0, TRAIN_SIZE, BATCH_SIZE)
+for batch_start in range(
+    0,
+    len(X_train),
+    BATCH_SIZE
 ):
-
-    end = start + BATCH_SIZE
-    X_batch = X_train[start:end]
-    Y_batch = Y_train[start:end]
-
-    hidden = network.layers[0].forward(
-        X_batch
+    batch_end = (
+        batch_start
+        + BATCH_SIZE
     )
-    output = network.layers[1].forward(
-        hidden
+
+    X_batch = X_train[
+        batch_start:batch_end
+    ]
+
+    y_batch = y_train[
+        batch_start:batch_end
+    ]
+
+    targets = one_hot(
+        y_batch
     )
-    error = output - Y_batch
+
+    hidden = network.layers[
+        0
+    ].forward(X_batch)
+
+    output = network.layers[
+        1
+    ].forward(hidden)
+
+    error = output - targets
 
     gradients = network.backward(
         error
     )
 
-    print(
-        f"\n--- Batch {batch_number} ---"
-    )
+    if batch_start == 0:
+        print("--- Batch 0 ---")
 
-    stats("input", X_batch)
-    stats("hidden", hidden)
-    stats("output", output)
-    stats("error", error)
-    stats("layer1 grad", gradients[0])
-    stats("layer2 grad", gradients[1])
-    stats("layer1 C", network.layers[0].C)
-    stats("layer2 C", network.layers[1].C)
-
-    arrays = [hidden, output, error, gradients[0], gradients[1]]
-
-    if not all(
-        np.all(np.isfinite(array))
-        for array in arrays
-    ):
-        print("\n!!! NON-FINITE VALUE FOUND")
-
-        print(
-            f"Explosion occurred in "
-            f"batch {batch_number}."
+        stats(
+            "input",
+            X_batch
         )
-        break
+
+        stats(
+            "hidden",
+            hidden
+        )
+
+        stats(
+            "output",
+            output
+        )
+
+        stats(
+            "error",
+            error
+        )
+
+        for i, (
+            coefficient_gradients,
+            bias_gradients
+        ) in enumerate(gradients):
+
+            stats(
+                f"layer{i + 1} C grad",
+                coefficient_gradients
+            )
+
+            stats(
+                f"layer{i + 1} b grad",
+                bias_gradients
+            )
+
+        stats(
+            "layer1 C",
+            network.layers[0].C
+        )
+
+        stats(
+            "layer1 b",
+            network.layers[0].b
+        )
+
+        stats(
+            "layer2 C",
+            network.layers[1].C
+        )
+
+        stats(
+            "layer2 b",
+            network.layers[1].b
+        )
+
+        print()
 
     network.update(
         gradients,
         LEARNING_RATE
     )
+
+    if batch_start == 0:
+        print(
+            "After first update:"
+        )
+
+        stats(
+            "layer1 C",
+            network.layers[0].C
+        )
+
+        stats(
+            "layer1 b",
+            network.layers[0].b
+        )
+
+        stats(
+            "layer2 C",
+            network.layers[1].C
+        )
+
+        stats(
+            "layer2 b",
+            network.layers[1].b
+        )
+
+        break
