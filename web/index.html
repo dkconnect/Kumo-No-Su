@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Kumo No Su</title>
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body>
+    <main>
+        <h1>Kumo No Su</h1>
+
+        <p>
+            Draw a digit and let Kumo inspect it.
+        </p>
+
+        <section class="drawing-section">
+            <canvas
+                id="drawing-canvas"
+                width="280"
+                height="280"
+            ></canvas>
+
+            <div class="controls">
+                <button id="predict-button">
+                    Predict
+                </button>
+
+                <button id="clear-button">
+                    Clear
+                </button>
+            </div>
+        </section>
+
+        <section class="input-section">
+            <h2>Kumo Input</h2>
+
+            <p>
+                The centered 28 × 28 image actually sent into the network.
+            </p>
+
+            <canvas
+                id="input-canvas"
+                width="28"
+                height="28"
+            ></canvas>
+        </section>
+
+        <section class="hidden-section">
+            <h2>Inside Kumo</h2>
+
+            <p>
+                Hidden-node activations produced by the first Kumo layer.
+            </p>
+
+            <div id="hidden-nodes"></div>
+        </section>
+
+        <section class="web-section">
+            <h2>Kumo Web</h2>
+
+            <p>
+                Select a hidden node to inspect the strongest
+                input edges affecting it.
+            </p>
+
+            <canvas
+                id="web-canvas"
+                width="900"
+                height="500"
+            ></canvas>
+
+            <div id="web-details">
+                Predict a digit, then select a hidden node.
+            </div>
+        </section>
+
+        <section class="prediction-section">
+            <p>
+                Prediction
+            </p>
+
+            <div id="prediction">
+                -
+            </div>
+
+            <div id="confidence">
+                Draw a digit to begin.
+            </div>
+        </section>
+
+        <section>
+            <h2>Kumo probabilities</h2>
+
+            <div id="probabilities"></div>
+        </section>
+    </main>
+
+    <script
+        type="module"
+        src="js/app.js"
+    ></script>
+</body>
+</html>
