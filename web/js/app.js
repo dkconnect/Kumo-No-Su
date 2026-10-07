@@ -62,13 +62,34 @@ const hiddenNodesElement = document.getElementById(
 );
 
 
-const drawingCanvas = new DrawingCanvas(
-    canvas
-);
-
 let network = null;
 let detailedInspection = null;
 let currentPrediction = null;
+let selectedHiddenIndex = null;
+let liveFrame = null;
+
+
+function scheduleLivePrediction() {
+    if (
+        network === null
+        || liveFrame !== null
+    ) {
+        return;
+    }
+
+    liveFrame = requestAnimationFrame(
+        () => {
+            liveFrame = null;
+            predict();
+        }
+    );
+}
+
+
+const drawingCanvas = new DrawingCanvas(
+    canvas,
+    scheduleLivePrediction
+);
 
 
 async function loadModel() {
@@ -176,6 +197,12 @@ function showHiddenNodes(hidden) {
             node.type = "button";
             node.className = "hidden-node";
 
+            if (index === selectedHiddenIndex) {
+                node.classList.add(
+                    "selected"
+                );
+            }
+
             const number = document.createElement(
                 "div"
             );
@@ -207,9 +234,8 @@ function showHiddenNodes(hidden) {
             node.addEventListener(
                 "click",
                 () => {
-                    inspectHiddenNode(
-                        index,
-                        node
+                    selectHiddenNode(
+                        index
                     );
                 }
             );
@@ -222,42 +248,48 @@ function showHiddenNodes(hidden) {
 }
 
 
-function inspectHiddenNode(
-    index,
-    selectedNode
-) {
-    if (detailedInspection === null) {
-        return;
-    }
+function selectHiddenNode(index) {
+    selectedHiddenIndex = index;
 
     const nodes = hiddenNodesElement.querySelectorAll(
         ".hidden-node"
     );
 
     nodes.forEach(
-        node => {
-            node.classList.remove(
-                "selected"
+        (node, nodeIndex) => {
+            node.classList.toggle(
+                "selected",
+                nodeIndex === index
             );
         }
     );
 
-    selectedNode.classList.add(
-        "selected"
-    );
+    drawSelectedHiddenWeb();
+}
 
-    const layer = (
+
+function drawSelectedHiddenWeb() {
+    if (
+        detailedInspection === null
+        || selectedHiddenIndex === null
+    ) {
+        return;
+    }
+
+    const index = selectedHiddenIndex;
+
+    const hiddenLayer = (
         detailedInspection.layers[0]
     );
 
-    const contributions = (
-        layer.edgeContributions.map(
+    const inputContributions = (
+        hiddenLayer.edgeContributions.map(
             edges => edges[index]
         )
     );
 
     const strongest = strongestContributions(
-        contributions,
+        inputContributions,
         20
     );
 
@@ -273,16 +305,17 @@ function inspectHiddenNode(
         webCanvas,
         detailedInspection.input,
         index,
-        layer.output[index],
-        contributions,
+        hiddenLayer.output[index],
+        inputContributions,
         outputContributions,
         currentPrediction
     );
 
     webDetails.textContent = (
-        `Showing the 20 strongest input edges `
-        + `affecting Hidden ${index}. `
-        + `Yellow marks Kumo's predicted digit.`
+        `Live view of Hidden ${index}. `
+        + `Showing its 20 strongest input contributions `
+        + `and its contributions to all 10 output digits. `
+        + `Yellow marks Kumo's current prediction.`
     );
 
     console.log(
@@ -331,15 +364,12 @@ function predict() {
         input
     );
 
-    const activations = network.inspect(
-        input
+    const hidden = (
+        detailedInspection.layers[0].output
     );
 
-    const hidden = activations[1];
-    const logits = activations[2];
-
-    showHiddenNodes(
-        hidden
+    const logits = (
+        detailedInspection.output
     );
 
     const probabilities = softmax(
@@ -380,32 +410,34 @@ function predict() {
         probabilities
     );
 
-    clearWeb();
-
-    console.log(
-        "Kumo input:",
-        input
-    );
-
-    console.log(
-        "Kumo hidden activations:",
+    showHiddenNodes(
         hidden
     );
 
-    console.log(
-        "Kumo logits:",
-        logits
-    );
+    if (selectedHiddenIndex !== null) {
+        drawSelectedHiddenWeb();
+    } else {
+        clearWeb();
+    }
 }
 
 
 function clear() {
+    if (liveFrame !== null) {
+        cancelAnimationFrame(
+            liveFrame
+        );
+
+        liveFrame = null;
+    }
+
     drawingCanvas.clear();
     clearInput();
     clearWeb();
 
     detailedInspection = null;
     currentPrediction = null;
+    selectedHiddenIndex = null;
 
     predictionElement.textContent = "-";
 

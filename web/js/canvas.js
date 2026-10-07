@@ -1,15 +1,11 @@
 class DrawingCanvas {
-    constructor(canvas) {
+    constructor(canvas, onChange = null) {
         this.canvas = canvas;
-
-        this.context = canvas.getContext(
-            "2d"
-        );
-
+        this.context = canvas.getContext("2d");
+        this.onChange = onChange;
         this.drawing = false;
         this.lastX = 0;
         this.lastY = 0;
-
         this.setup();
         this.clear();
     }
@@ -42,40 +38,28 @@ class DrawingCanvas {
     }
 
     position(event) {
-        const rect = (
-            this.canvas.getBoundingClientRect()
-        );
-
-        const scaleX = (
-            this.canvas.width
-            / rect.width
-        );
-
-        const scaleY = (
-            this.canvas.height
-            / rect.height
-        );
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
 
         return {
-            x: (
-                event.clientX - rect.left
-            ) * scaleX,
-
-            y: (
-                event.clientY - rect.top
-            ) * scaleY
+            x: (event.clientX - rect.left) * scaleX,
+            y: (event.clientY - rect.top) * scaleY
         };
+    }
+
+    changed() {
+        if (this.onChange !== null) {
+            this.onChange();
+        }
     }
 
     start(event) {
         event.preventDefault();
 
-        const position = this.position(
-            event
-        );
+        const position = this.position(event);
 
         this.drawing = true;
-
         this.lastX = position.x;
         this.lastY = position.y;
 
@@ -91,6 +75,8 @@ class DrawingCanvas {
 
         this.context.fillStyle = "white";
         this.context.fill();
+
+        this.changed();
     }
 
     move(event) {
@@ -100,9 +86,7 @@ class DrawingCanvas {
 
         event.preventDefault();
 
-        const position = this.position(
-            event
-        );
+        const position = this.position(event);
 
         this.context.beginPath();
 
@@ -120,6 +104,8 @@ class DrawingCanvas {
 
         this.lastX = position.x;
         this.lastY = position.y;
+
+        this.changed();
     }
 
     stop() {
@@ -137,7 +123,6 @@ class DrawingCanvas {
         );
     }
 }
-
 
 export {
     DrawingCanvas
