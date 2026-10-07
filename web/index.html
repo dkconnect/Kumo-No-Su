@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
+
     <title>Kumo No Su</title>
+
     <link
         rel="stylesheet"
         href="css/style.css"
@@ -15,98 +18,143 @@
 
 <body>
     <main>
-        <h1>Kumo No Su</h1>
+        <header class="hero">
+            <p class="eyebrow">
+                KUMO NO SU
+            </p>
 
-        <p>
-            Draw a digit and let Kumo inspect it.
-        </p>
+            <h1>
+                See Kumo think.
+            </h1>
 
-        <section class="drawing-section">
-            <canvas
-                id="drawing-canvas"
-                width="280"
-                height="280"
-            ></canvas>
+            <p class="hero-description">
+                Draw a digit and watch Kumo reshape information
+                through its learned edge functions.
+            </p>
+        </header>
 
-            <div class="controls">
-                <button id="predict-button">
-                    Predict
-                </button>
+        <section class="main-grid">
+            <div class="drawing-section">
+                <h2>
+                    Draw
+                </h2>
 
-                <button id="clear-button">
-                    Clear
-                </button>
+                <p class="section-description">
+                    Draw a digit and let Kumo inspect it.
+                </p>
+
+                <canvas
+                    id="drawing-canvas"
+                    width="280"
+                    height="280"
+                ></canvas>
+
+                <div class="controls">
+                    <button
+                        id="predict-button"
+                        type="button"
+                    >
+                        Predict
+                    </button>
+
+                    <button
+                        id="clear-button"
+                        type="button"
+                    >
+                        Clear
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <h2>
+                    Kumo Input
+                </h2>
+
+                <p class="section-description">
+                    The centered 28 × 28 image actually sent
+                    into the network.
+                </p>
+
+                <canvas
+                    id="input-canvas"
+                    width="28"
+                    height="28"
+                ></canvas>
+            </div>
+
+            <div class="web-section">
+                <h2>
+                    Kumo Web
+                </h2>
+
+                <p class="section-description">
+                    Watch the strongest path through Kumo
+                    update as you draw.
+                </p>
+
+                <canvas
+                    id="web-canvas"
+                    width="900"
+                    height="500"
+                ></canvas>
+
+                <div id="web-details">
+                    Start drawing to inspect Kumo.
+                </div>
             </div>
         </section>
 
-        <section class="input-section">
-            <h2>Kumo Input</h2>
+        <section class="lower-grid">
+            <div class="prediction-section">
+                <p class="prediction-label">
+                    Prediction
+                </p>
 
-            <p>
-                The centered 28 × 28 image actually sent into the network.
-            </p>
+                <div id="prediction">
+                    -
+                </div>
 
-            <canvas
-                id="input-canvas"
-                width="28"
-                height="28"
-            ></canvas>
-        </section>
+                <div id="confidence">
+                    Draw a digit to begin.
+                </div>
 
-        <section class="hidden-section">
-            <h2>Inside Kumo</h2>
+                <h2 class="probability-title">
+                    Kumo probabilities
+                </h2>
 
-            <p>
-                Hidden-node activations produced by the first Kumo layer.
-            </p>
+                <div id="probabilities"></div>
+            </div>
 
-            <div id="hidden-nodes"></div>
-        </section>
+            <div class="hidden-section">
+                <h2>
+                    Inside Kumo
+                </h2>
 
-        <section class="web-section">
-            <h2>Kumo Web</h2>
+                <p class="section-description">
+                    Hidden-node activations produced by the
+                    first Kumo layer. Kumo automatically follows
+                    the strongest node, or select one yourself.
+                </p>
 
-            <p>
-                Select a hidden node to inspect the strongest
-                input edges affecting it.
-            </p>
-
-            <canvas
-                id="web-canvas"
-                width="900"
-                height="500"
-            ></canvas>
-
-            <div id="web-details">
-                Predict a digit, then select a hidden node.
+                <div id="hidden-nodes"></div>
             </div>
         </section>
 
-        <section class="prediction-section">
-            <p>
-                Prediction
-            </p>
+        <footer>
+            <span>
+                Kumo No Su
+            </span>
 
-            <div id="prediction">
-                -
-            </div>
-
-            <div id="confidence">
-                Draw a digit to begin.
-            </div>
-        </section>
-
-        <section>
-            <h2>Kumo probabilities</h2>
-
-            <div id="probabilities"></div>
-        </section>
+            <span>
+                Functions live on edges.
+            </span>
+        </footer>
     </main>
 
     <script
         type="module"
         src="js/app.js"
     ></script>
-
 </body>
 </html>
