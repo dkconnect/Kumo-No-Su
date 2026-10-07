@@ -1,14 +1,9 @@
 import numpy as np
+
 from kumo.layer import KumoLayer
 
-# CREATE KUMO LAYER
-layer = KumoLayer(
-    n_inputs=2,
-    n_outputs=1,
-    degree=1
-)
 
-# TRAINING DATA
+np.random.seed(42)
 
 X = np.array([
     [1.0, 2.0],
@@ -24,6 +19,14 @@ Y = np.array([
     [8.0]
 ])
 
+layer = KumoLayer(
+    n_inputs=2,
+    n_outputs=1,
+    degree=2
+)
+
+learning_rate = 0.001
+epochs = 1000
 
 print("X shape:", X.shape)
 print("Y shape:", Y.shape)
@@ -31,69 +34,69 @@ print("Y shape:", Y.shape)
 print("\nFirst input:", X[0])
 print("First target:", Y[0])
 
-learning_rate = 0.001
-epochs = 1000
-
 for epoch in range(epochs):
-    total_loss = 0.0
-    for x, target in zip(X, Y):
+    predictions = layer.forward(X)
 
-        # Forward
-        prediction = layer.forward(x)
+    error = predictions - Y
 
-        # Error
-        error = prediction - target
+    loss = 0.5 * np.mean(
+        error ** 2
+    )
 
-        # Squared Error
-        loss = 0.5 * np.sum(
-            error ** 2
-        )
-        total_loss += loss
+    (
+        coefficient_gradients,
+        bias_gradients,
+        input_gradients
+    ) = layer.backward(error)
 
-        # Backward
-        coefficient_gradients, input_gradients = (
-            layer.backward(error)
-        )
-
-        # Gradient descent
-        layer.update(
-            coefficient_gradients,
-            learning_rate
-        )
+    layer.update(
+        coefficient_gradients,
+        bias_gradients,
+        learning_rate
+    )
 
     if epoch % 100 == 0:
         print(
-            f"Epoch {epoch:3d} | "
-            f"Total Loss: {total_loss:.6f}"
+            f"Epoch {epoch:4d} | "
+            f"Loss: {loss:.6f}"
         )
 
+predictions = layer.forward(X)
 
 print("\nTraining predictions:")
 
-for x, target in zip(X, Y):
-
-    prediction = layer.forward(x)
-
+for x, prediction, target in zip(
+    X,
+    predictions,
+    Y
+):
     print(
         f"{x} -> "
-        f"prediction: {prediction[0]:.4f}, "
+        f"prediction: "
+        f"{prediction[0]:.4f}, "
         f"target: {target[0]:.1f}"
     )
 
-test_x = np.array([
+test_input = np.array([
     6.0,
     2.0
 ])
 
 test_prediction = layer.forward(
-    test_x
+    test_input
 )
 
 print("\nUnseen example:")
-
 print(
-    f"{test_x} -> "
-    f"prediction: {test_prediction[0]:.4f}"
+    f"{test_input} -> "
+    f"prediction: "
+    f"{test_prediction[0]:.4f}"
 )
 
 print("Expected: 8.0")
+
+print("\nLearned coefficients:")
+print(layer.C)
+
+print("\nLearned bias:")
+print(layer.b)

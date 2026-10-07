@@ -1,5 +1,9 @@
 import numpy as np
+
 from kumo.layer import KumoLayer
+
+
+np.random.seed(42)
 
 layer = KumoLayer(
     n_inputs=2,
@@ -7,21 +11,32 @@ layer = KumoLayer(
     degree=2
 )
 
-x = np.array([2.0, 3.0])
-target = np.array([5.0])
+x = np.array([
+    2.0,
+    3.0
+])
+
+target = np.array([
+    5.0
+])
 
 learning_rate = 0.001
+epochs = 1000
 
-for epoch in range(100):
-    # Forward
+for epoch in range(epochs):
     prediction = layer.forward(x)
 
-    # Error and loss
     error = prediction - target
-    loss = 0.5 * np.sum(error ** 2)
 
-    # Backward
-    coefficient_gradients, bias_gradients = layer.backward(error)
+    loss = 0.5 * np.sum(
+        error ** 2
+    )
+
+    (
+        coefficient_gradients,
+        bias_gradients,
+        input_gradients
+    ) = layer.backward(error)
 
     layer.update(
         coefficient_gradients,
@@ -29,9 +44,24 @@ for epoch in range(100):
         learning_rate
     )
 
-    if epoch % 10 == 0:
+    if epoch % 100 == 0:
         print(
-            f"Epoch {epoch:3d} | "
-            f"Prediction: {prediction[0]:.6f} | "
-            f"Loss: {loss:.6f}"
+            f"Epoch {epoch:4d} | "
+            f"Loss: {loss:.6f} | "
+            f"Prediction: "
+            f"{prediction[0]:.6f}"
         )
+
+prediction = layer.forward(x)
+
+print("\nFinal prediction:")
+print(prediction)
+
+print("\nTarget:")
+print(target)
+
+print("\nLearned coefficients:")
+print(layer.C)
+
+print("\nLearned bias:")
+print(layer.b)
