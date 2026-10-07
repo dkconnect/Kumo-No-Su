@@ -7,21 +7,13 @@ from kumo.network import KumoNetwork
 MODEL_PATH = "models/mnist_full_kumo.npz"
 HIDDEN_NODE = 5
 
-X_train, y_train, X_test, y_test = (
-    load_mnist_split()
-)
+X_train, y_train, X_test, y_test = (load_mnist_split())
 
-network = KumoNetwork.load(
-    MODEL_PATH
-)
+network = KumoNetwork.load(MODEL_PATH)
 
 layer = network.layers[0]
 
-coefficients = layer.C[
-    :,
-    HIDDEN_NODE,
-    :
-]
+coefficients = layer.C[:, HIDDEN_NODE, :]
 
 bias = layer.b[
     HIDDEN_NODE
@@ -83,11 +75,5 @@ for digit in range(10):
         f"{activation:10.4f}"
     )
 
-    if not np.isclose(
-        activation,
-        real_activation
-    ):
-        raise RuntimeError(
-            "Polynomial decomposition "
-            "does not match KumoLayer.forward()"
-        )
+    if not np.isclose(activation, real_activation):
+        raise RuntimeError("Polynomial decomposition does not match KumoLayer.forward ()")
