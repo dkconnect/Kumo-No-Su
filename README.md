@@ -1,4 +1,5 @@
 <div align="center">
+
 <img src="kumo_logo.png" width="180" alt="Kumo No Su logo"/>
 
 # Kumo No Su
