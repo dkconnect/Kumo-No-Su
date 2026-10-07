@@ -66,6 +66,7 @@ let network = null;
 let detailedInspection = null;
 let currentPrediction = null;
 let selectedHiddenIndex = null;
+let manualHiddenSelection = false;
 let liveFrame = null;
 
 
@@ -180,8 +181,49 @@ function clearWeb() {
     );
 
     webDetails.textContent = (
-        "Predict a digit, then select a hidden node."
+        "Start drawing to inspect Kumo."
     );
+}
+
+
+function findBestHiddenNode() {
+    if (
+        detailedInspection === null
+        || currentPrediction === null
+    ) {
+        return null;
+    }
+
+    const outputLayer = (
+        detailedInspection.layers[1]
+    );
+
+    let bestIndex = 0;
+
+    let bestStrength = Math.abs(
+        outputLayer.edgeContributions[0][
+            currentPrediction
+        ]
+    );
+
+    for (
+        let i = 1;
+        i < outputLayer.edgeContributions.length;
+        i++
+    ) {
+        const strength = Math.abs(
+            outputLayer.edgeContributions[i][
+                currentPrediction
+            ]
+        );
+
+        if (strength > bestStrength) {
+            bestStrength = strength;
+            bestIndex = i;
+        }
+    }
+
+    return bestIndex;
 }
 
 
@@ -250,6 +292,7 @@ function showHiddenNodes(hidden) {
 
 function selectHiddenNode(index) {
     selectedHiddenIndex = index;
+    manualHiddenSelection = true;
 
     const nodes = hiddenNodesElement.querySelectorAll(
         ".hidden-node"
@@ -311,8 +354,14 @@ function drawSelectedHiddenWeb() {
         currentPrediction
     );
 
+    const mode = (
+        manualHiddenSelection
+            ? "MANUAL"
+            : "AUTO"
+    );
+
     webDetails.textContent = (
-        `Live view of Hidden ${index}. `
+        `${mode} — Hidden ${index}. `
         + `Showing its 20 strongest input contributions `
         + `and its contributions to all 10 output digits. `
         + `Yellow marks Kumo's current prediction.`
@@ -393,6 +442,12 @@ function predict() {
 
     currentPrediction = prediction;
 
+    if (!manualHiddenSelection) {
+        selectedHiddenIndex = (
+            findBestHiddenNode()
+        );
+    }
+
     const confidence = (
         probabilities[prediction]
         * 100
@@ -438,6 +493,7 @@ function clear() {
     detailedInspection = null;
     currentPrediction = null;
     selectedHiddenIndex = null;
+    manualHiddenSelection = false;
 
     predictionElement.textContent = "-";
 
