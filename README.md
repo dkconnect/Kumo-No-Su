@@ -31,6 +31,10 @@ A conventional dense neural network normally gives each connection a
 scalar weight. Kumo gives each connection a learnable polynomial
 function.
 
+<p align="center">
+  <img src="images/kumo1.jpeg" width="500" alt="Layer 1 learned edge functions"/>
+</p>
+
 The current Kumo v2 edge is
 
 ```math
