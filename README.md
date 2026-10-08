@@ -1498,6 +1498,10 @@ Improving the live app further would require better preprocessing,
 augmentation/retraining, a stronger model, or some combination of
 those---not arbitrary changes until every hand drawing happens to work.
 
+<p align="center">
+  <video src="images/working.mp4" width="500" controls autoplay loop muted></video>
+</p>
+
 ------------------------------------------------------------------------
 
 # Visualization migration during v2
