@@ -1,10 +1,6 @@
 <div align="center">
 
-<img src="kumo_logo.png" width="180" alt="Kumo No Su logo"/>
-
-# Kumo No Su
-
-### 蜘蛛の巣
+<img src="logo/kumo_header.png" width="1000" alt="Kumo No Su logo"/>
 
 **A neural network built from scratch where the edges learn functions.**
 
