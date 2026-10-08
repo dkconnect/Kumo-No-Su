@@ -5,6 +5,7 @@
 **A neural network built from scratch where the edges learn functions.**
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
+[![Live](https://img.shields.io/badge/Live%20here-brightgreen)](https://dkconnect.github.io/Kumo-No-Su/)
 ![NumPy](https://img.shields.io/badge/NumPy-from%20scratch%20NN-orange)
 ![MNIST](https://img.shields.io/badge/MNIST-91.50%25-success)
 ![Status](https://img.shields.io/badge/status-v1%20code%20complete-brightgreen)
